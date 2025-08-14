@@ -6,6 +6,10 @@ import { makeAutoObservable, runInAction } from "mobx";
 import { Session } from "next-auth";
 
 export class BoardStore {
+    session: Session | null = null;
+    axios: AxiosInstance | null = null;
+    projectId: string | null = null;
+
     columns: IColumnCard[] = [];
     cards: ICard[] = [];
     projectName: string = "";
@@ -14,20 +18,34 @@ export class BoardStore {
     error: Error | null = null;
 
     constructor() {
-        makeAutoObservable(this, {}, { autoBind: true });
+        makeAutoObservable(
+            this,
+            {
+                axios: false,
+                projectId: false,
+            },
+            { autoBind: true }
+        );
     }
 
-    // Action для загрузки и "разбора" данных проекта
-    fetchProject = async (
-        axios: AxiosInstance,
-        id: string,
+    init(
+        axiosInstance: AxiosInstance,
+        projectId: string,
         session: Session | null
-    ) => {
-        if (!session) return;
+    ) {
+        this.axios = axiosInstance;
+        this.projectId = projectId;
+        this.session = session;
+    }
+
+    async fetchProject() {
+        if (!this.axios || !this.projectId || !this.session) return;
 
         this.isFetching = true;
         try {
-            const response = await axios.get<IBoardProject>(`/projects/${id}`);
+            const response = await this.axios.get<IBoardProject>(
+                `/projects/${this.projectId}`
+            );
             const projectData = response.data;
 
             runInAction(() => {
@@ -45,7 +63,7 @@ export class BoardStore {
                 this.isFetching = false;
             });
         }
-    };
+    }
 
     get findColumnByCardId() {
         return (cardId: string) =>

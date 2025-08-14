@@ -19,15 +19,10 @@ export const useBoardPage = () => {
     const [activeColumn, setActiveColumn] = useState<IColumnCard | null>(null);
 
     useEffect(() => {
-        if (axios && boardStore && projectId) {
-            boardStore.fetchProject(axios, projectId, session);
-        }
-    }, [boardStore, axios, projectId]);
-
-    useEffect(() => {
-        if (!axios || !boardStore || !params?.projectId) return;
-        boardStore.fetchProject(axios, params.projectId as string, session);
-    }, [boardStore, axios, session, params?.projectId]);
+        if (!axios || !boardStore || !projectId) return;
+        boardStore.init(axios, projectId, session);
+        boardStore.fetchProject();
+    }, [boardStore, axios, session, projectId]);
 
     const handleDragStart = (event: DragStartEvent) => {
         if (event.active.data.current?.type === "Card") {

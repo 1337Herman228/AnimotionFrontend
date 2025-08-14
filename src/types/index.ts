@@ -49,3 +49,10 @@ export interface IBoardProject {
     columns: IColumnCard[];
     members: IUser[];
 }
+
+export interface MoveCardData {
+    cardId: string;
+    sourceColumnId: string;
+    destinationColumnId: string;
+    destinationIndex: number;
+}
