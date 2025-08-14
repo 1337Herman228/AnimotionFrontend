@@ -1,8 +1,9 @@
-import { IBoardProject, ICard, IColumn, IColumnCard, IProject } from "@/types";
+import { IBoardProject, ICard, IColumnCard } from "@/types";
 import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { AxiosInstance } from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
+import { Session } from "next-auth";
 
 export class BoardStore {
     columns: IColumnCard[] = [];
@@ -17,7 +18,13 @@ export class BoardStore {
     }
 
     // Action для загрузки и "разбора" данных проекта
-    fetchProject = async (axios: AxiosInstance, id: string) => {
+    fetchProject = async (
+        axios: AxiosInstance,
+        id: string,
+        session: Session | null
+    ) => {
+        if (!session) return;
+
         this.isFetching = true;
         try {
             const response = await axios.get<IBoardProject>(`/projects/${id}`);
@@ -67,7 +74,7 @@ export class BoardStore {
         destColumn.cardOrder.push(cardId);
     }
 
-    handleDragEnd(event: DragEndEvent) {
+    handleCardDragEnd(event: DragEndEvent) {
         const { active, over } = event;
         if (!over) return;
 
@@ -112,6 +119,21 @@ export class BoardStore {
         // TODO: Отправить запрос на бэкенд для сохранения изменений.
         // Теперь у вас есть финальное состояние `destColumn.cardOrder` и `destColumn.id`,
         // которые можно отправить на сервер.
+    }
+
+    moveColumn(event: DragEndEvent) {
+        const { active, over } = event;
+        if (!over || active.id === over.id) return;
+
+        const oldIndex = this.columns.findIndex((col) => col.id === active.id);
+        const newIndex = this.columns.findIndex((col) => col.id === over.id);
+
+        // Используем arrayMove для обновления порядка в массиве колонок
+        this.columns = arrayMove(this.columns, oldIndex, newIndex);
+
+        // TODO: Вызвать API для сохранения нового порядка
+        // const newOrder = this.columns.map(col => col.id);
+        // axios.patch(`/projects/${this.projectId}/column-order`, { columnOrder: newOrder });
     }
 }
 

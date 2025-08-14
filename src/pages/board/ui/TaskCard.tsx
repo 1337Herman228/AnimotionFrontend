@@ -2,6 +2,7 @@ import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { useSortable } from "@dnd-kit/sortable";
 import { ICard } from "@/types";
+import { CSS } from "@dnd-kit/utilities";
 
 interface TaskCardProps {
     card: ICard;
@@ -9,17 +10,24 @@ interface TaskCardProps {
 }
 
 const TaskCard = ({ card, isOverlay }: TaskCardProps) => {
-    const { attributes, listeners, setNodeRef, transition, isDragging } =
-        useSortable({
-            id: card.id,
-            data: { type: "Card", card },
-        });
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transition,
+        transform,
+        isDragging,
+    } = useSortable({
+        id: card.id,
+        data: { type: "Card", card },
+    });
 
     const style = {
         transition,
+        transform: CSS.Transform.toString(transform),
     };
 
-    const cardClasses = ` ${isDragging && !isOverlay ? "opacity-30" : ""} ${
+    const cardClasses = ` ${isDragging && !isOverlay ? "opacity-45" : ""} ${
         isOverlay ? "cursor-grabbing" : "cursor-grab"
     }`;
 

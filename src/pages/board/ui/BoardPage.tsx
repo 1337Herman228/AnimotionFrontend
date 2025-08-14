@@ -10,7 +10,10 @@ import {
     useSensors,
     DragOverlay,
 } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+} from "@dnd-kit/sortable";
 import useBoardPage from "../api";
 import Column from "./Column";
 import TaskCard from "./TaskCard";
@@ -20,6 +23,7 @@ const BoardPage = () => {
     const {
         boardStore,
         activeCard,
+        activeColumn,
         handleDragStart,
         handleDragOver,
         handleDragEnd,
@@ -43,7 +47,6 @@ const BoardPage = () => {
             <h1 className="text-2xl font-bold mb-4">
                 {boardStore.projectName}
             </h1>
-
             <DndContext
                 sensors={sensors}
                 collisionDetection={closestCorners}
@@ -52,21 +55,32 @@ const BoardPage = () => {
                 onDragEnd={handleDragEnd}
             >
                 <div className="flex gap-4 overflow-x-auto h-full pb-4">
-                    {boardStore.columns.map((column) => (
-                        <Column
-                            key={column.id}
-                            column={column}
-                            cards={column.cardOrder.map(
-                                (id) => cardsMap.get(id)!
-                            )}
-                        />
-                    ))}
+                    <SortableContext
+                        items={boardStore.columns.map((c) => c.id)}
+                    >
+                        {boardStore.columns.map((column) => (
+                            <Column
+                                key={column.id}
+                                column={column}
+                                cards={column.cardOrder.map(
+                                    (id) => cardsMap.get(id)!
+                                )}
+                            />
+                        ))}
+                    </SortableContext>
                 </div>
 
                 {createPortal(
                     <DragOverlay>
                         {activeCard ? (
                             <TaskCard card={activeCard} isOverlay />
+                        ) : null}
+                        {activeColumn ? (
+                            <Column
+                                column={activeColumn}
+                                cards={activeColumn.cards}
+                                isOverlay
+                            />
                         ) : null}
                     </DragOverlay>,
                     document.body

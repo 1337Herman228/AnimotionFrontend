@@ -14,6 +14,7 @@ export interface IProject {
     name: string;
     ownerId: string;
     memberIds: string[];
+    columnOrder: string[];
 }
 
 export interface ICard {
