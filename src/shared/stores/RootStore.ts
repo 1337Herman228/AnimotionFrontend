@@ -1,4 +1,4 @@
-import BoardStore from "./BoardStore";
+import { BoardStore } from "./BoardStore";
 import ProjectStore from "./ProjectStore";
 
 class RootStore {

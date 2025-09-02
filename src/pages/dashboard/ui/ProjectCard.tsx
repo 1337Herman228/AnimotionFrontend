@@ -2,22 +2,14 @@ import Link from "next/link";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { MoreHorizontal } from "lucide-react";
+import SettingsMenu from "./SettingsMenu";
 
 interface ProjectCardProps {
     project: {
@@ -43,30 +35,12 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
 
     return (
         <Link href={`/projects/${project.id}`}>
-            <Card className="hover:border-primary transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1">
+            <Card className="hover:border-primary transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-accent-foreground/35 ">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="text-lg font-semibold">
                         {project.name}
                     </CardTitle>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuItem className="text-red-500">
-                                Delete project
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <SettingsMenu />
                 </CardHeader>
 
                 <CardContent>

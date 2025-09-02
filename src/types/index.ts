@@ -35,7 +35,7 @@ export interface IColumn {
     cardOrder: string[];
 }
 
-export interface IColumnCard {
+export interface IBoardColumn {
     cardOrder: string[];
     cards: ICard[];
     id: string;
@@ -46,8 +46,9 @@ export interface IBoardProject {
     id: string;
     name: string;
     ownerId: string;
-    columns: IColumnCard[];
+    columns: IBoardColumn[];
     members: IUser[];
+    columnOrder: string[];
 }
 
 export interface MoveCardData {

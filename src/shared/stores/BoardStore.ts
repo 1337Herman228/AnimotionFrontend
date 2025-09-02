@@ -1,63 +1,58 @@
-import { IBoardProject, ICard, IColumnCard } from "@/types";
-import { DragEndEvent, DragOverEvent } from "@dnd-kit/core";
+import { websocketService } from "@/services/webSocketService";
+import { IBoardProject, ICard, IBoardColumn } from "@/types";
+import { DragEndEvent, DragOverEvent, DragStartEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { AxiosInstance } from "axios";
 import { makeAutoObservable, runInAction } from "mobx";
-import { Session } from "next-auth";
+import { SetStateAction } from "react";
 
 export class BoardStore {
-    session: Session | null = null;
     axios: AxiosInstance | null = null;
     projectId: string | null = null;
 
-    columns: IColumnCard[] = [];
+    columns: IBoardColumn[] = [];
     cards: ICard[] = [];
     projectName: string = "";
+
+    sourceColumn: IBoardColumn | null = null;
 
     isFetching = true;
     error: Error | null = null;
 
+    activeCard: ICard | null = null;
+    activeColumn: IBoardColumn | null = null;
+
     constructor() {
-        makeAutoObservable(
-            this,
-            {
-                axios: false,
-                projectId: false,
-            },
-            { autoBind: true }
-        );
+        makeAutoObservable(this, {
+            axios: false,
+            projectId: false,
+            sourceColumn: false,
+        });
     }
 
-    init(
-        axiosInstance: AxiosInstance,
-        projectId: string,
-        session: Session | null
-    ) {
+    // --- ИНИЦИАЛИЗАЦИЯ ---
+    init(axiosInstance: AxiosInstance, projectId: string) {
         this.axios = axiosInstance;
         this.projectId = projectId;
-        this.session = session;
+        this.fetchProject();
     }
 
     async fetchProject() {
-        if (!this.axios || !this.projectId || !this.session) return;
+        if (!this.axios || !this.projectId) return;
 
         this.isFetching = true;
         try {
+            // Убедитесь, что IBoardProject включает `columnOrder: string[]`
             const response = await this.axios.get<IBoardProject>(
                 `/projects/${this.projectId}`
             );
-            const projectData = response.data;
-
-            runInAction(() => {
-                this.projectName = projectData.name;
-                this.columns = projectData.columns;
-                this.cards = projectData.columns.flatMap((col) => col.cards);
-            });
+            // Вызываем action для установки начального состояния
+            this.setBoardState(response.data);
         } catch (err: any) {
             runInAction(() => {
                 this.error = err;
-                console.error("Failed to fetch project:", err);
             });
+            console.error("Failed to fetch project:", err);
         } finally {
             runInAction(() => {
                 this.isFetching = false;
@@ -65,94 +60,211 @@ export class BoardStore {
         }
     }
 
-    get findColumnByCardId() {
-        return (cardId: string) =>
-            this.columns.find((col) => col.cardOrder.includes(cardId));
+    // --- СИНХРОНИЗАЦИЯ ---
+    /**
+     * Единственный метод для применения состояния, полученного от сервера.
+     * Вызывается как при первоначальной загрузке, так и при WebSocket-обновлениях.
+     */
+    setBoardState(projectData: IBoardProject) {
+        this.projectName = projectData.name;
+
+        const columnsMap = new Map(
+            projectData.columns.map((col) => [col.id, col])
+        );
+        // Сортируем колонки в соответствии с `columnOrder` от сервера
+        const sortedColumns = (projectData.columnOrder || [])
+            .map((colId) => columnsMap.get(colId)!)
+            .filter(Boolean);
+
+        this.columns = sortedColumns;
+        this.cards = sortedColumns.flatMap((col) => col.cards);
     }
 
-    handleDragOver(event: DragOverEvent) {
-        const { active, over } = event;
-        if (!over) return;
+    private findColumnByCardId = (cardId: string) => {
+        return this.columns.find((col) => col.cardOrder.includes(cardId));
+    };
 
+    handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
         const cardId = active.id as string;
+
+        runInAction(() => {
+            if (active.data.current?.type === "Card") {
+                this.activeCard = active.data.current.card;
+                this.sourceColumn = this.findColumnByCardId(cardId) || null;
+            }
+            if (active.data.current?.type === "Column") {
+                this.activeColumn = active.data.current.column;
+            }
+        });
+    };
+
+    // Момент перетаскивания карточки / колонки
+    handleDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
+        if (!over || !active || active.data.current?.type !== "Card") return;
+
+        // перетасиваемая карточка
+        const cardId = active.id as string;
+        // карточка или колонка на которую перетаскивают
         const overId = over.id as string;
 
-        const sourceColumn = this.findColumnByCardId(cardId);
+        // Ссылки на карточки внутри колонок (изменяют колонки внутри this.columns)
+        // const column = this.findColumnByCardId(cardId) || null;
+        // this.sourceColumn = column;
+
+        console.log("this.sourceColumn", this.sourceColumn);
+
+        //// когда active = over, то
         const destColumn =
             over.data.current?.type === "Column"
                 ? this.columns.find((c) => c.id === overId)
+                : active.id === over.id
+                ? this.columns.find(
+                      (c) => c.id === over.data.current?.card.columnId
+                  )
                 : this.findColumnByCardId(overId);
 
-        if (!sourceColumn || !destColumn || sourceColumn.id === destColumn.id) {
+        // console.log("active", active);
+        // console.log("over", over);
+        console.log(" this.sourceColumn ", this.sourceColumn?.id);
+        console.log("destColumn", destColumn?.id);
+
+        if (!this.sourceColumn || !destColumn) {
             return;
         }
 
-        const cardIndex = sourceColumn.cardOrder.indexOf(cardId);
-        sourceColumn.cardOrder.splice(cardIndex, 1);
-        destColumn.cardOrder.push(cardId);
-    }
+        // Оптимистично "перекидываем" карточку для плавного UI
+        runInAction(() => {
+            if (!this.sourceColumn) return;
 
-    handleCardDragEnd(event: DragEndEvent) {
+            // Обновляем массив всех карточек сards и вносим в карточку новые данные
+            this.cards = this.cards.map((card) => {
+                if (card.id === cardId) {
+                    card.columnId = destColumn.id;
+                }
+                return card;
+            });
+
+            // Обновляем source-колонку и все данные внутри неё
+            const cardIndex = this.sourceColumn.cardOrder.indexOf(cardId);
+            this.sourceColumn.cardOrder.splice(cardIndex, 1);
+            this.sourceColumn.cards = this.sourceColumn.cards.filter(
+                (c) => c.id !== cardId
+            );
+
+            // Обновляем destination-колонку и все данные внутри неё
+            destColumn.cardOrder.push(cardId);
+            const cardToUpdate = this.cards.find((c) => c.id === cardId);
+            destColumn.cards.push(cardToUpdate!);
+
+            // console.log("this.columns", this.columns);
+            // console.log("this.cards", this.cards);
+        });
+    };
+
+    handleCardDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-        if (!over) return;
+        if (!over || !active || !this.sourceColumn) return;
 
         const cardId = active.id as string;
         const overId = over.id as string;
+        // console.log(" active", active);
+        // console.log(" over", over);
 
-        const sourceColumn = this.findColumnByCardId(cardId)!;
         const destColumn =
             this.findColumnByCardId(overId) ||
             this.columns.find((c) => c.id === overId)!;
 
-        if (!sourceColumn || !destColumn) return;
+        // console.log("active.id", active.id);
+        // console.log("over.id", over.id);
 
-        if (sourceColumn.id === destColumn.id) {
-            if (cardId === overId) return;
+        // console.log("destColumn", destColumn.id);
+        // console.log("this.sourceColumn", this.sourceColumn.id);
 
-            const oldIndex = sourceColumn.cardOrder.indexOf(cardId);
-            const newIndex = sourceColumn.cardOrder.indexOf(overId);
+        // Финальная сортировка на клиенте
+        runInAction(() => {
+            if (!this.sourceColumn) return;
 
-            sourceColumn.cardOrder = arrayMove(
-                sourceColumn.cardOrder,
-                oldIndex,
-                newIndex
-            );
-        } else {
-            const isOverACard = this.cards.some((c) => c.id === overId);
-            const overIndex = isOverACard
-                ? destColumn.cardOrder.indexOf(overId)
-                : destColumn.cardOrder.length;
+            // Меняем местами карточки в одной и той же колонке
+            if (this.sourceColumn.id === destColumn.id) {
+                const oldIndex = this.sourceColumn.cardOrder.indexOf(cardId);
+                const newIndex = destColumn.cardOrder.indexOf(overId);
+                this.sourceColumn.cardOrder = arrayMove(
+                    this.sourceColumn.cardOrder,
+                    oldIndex,
+                    newIndex
+                );
+            } else {
+                // Так как в handleDragOver мы добавляем карточку в массив, перетаскиваемая карточка всегда будет в конце
+                // сначала убираем фантомную карточку, а затем ставим на ее место настояющую
+                const isOverCard = this.cards.some((c) => c.id === overId);
+                destColumn.cardOrder = destColumn.cardOrder.filter(
+                    (c) => c !== cardId
+                );
+                const newIndex = isOverCard
+                    ? destColumn.cardOrder.indexOf(overId)
+                    : destColumn.cardOrder.length;
+                destColumn.cardOrder.splice(newIndex, 0, cardId);
+            }
+        });
 
-            // We a `handleDragOver`,
-            // поэтому нам нужно только отсортировать ее в новой колонке.
-            const oldIndexInNewColumn = destColumn.cardOrder.indexOf(cardId);
+        // console.log("sourceColumn end", sourceColumn!.id);
+        // console.log("destColumn end", destColumn!.id);
 
-            destColumn.cardOrder = arrayMove(
-                destColumn.cardOrder,
-                oldIndexInNewColumn,
-                overIndex
-            );
-        }
+        // --- 2. ОТПРАВКА НА СЕРВЕР ---
+        if (!this.axios || !this.projectId) return;
 
-        // TODO: Отправить запрос на бэкенд для сохранения изменений.
-        // Теперь у вас есть финальное состояние `destColumn.cardOrder` и `destColumn.id`,
-        // которые можно отправить на сервер.
-    }
+        websocketService.moveCard({
+            projectId: this.projectId,
+            sourceColumn: {
+                id: this.sourceColumn.id,
+                cardOrder: this.sourceColumn.cardOrder,
+            },
+            destinationColumn: {
+                id: destColumn.id,
+                cardOrder: destColumn.cardOrder,
+            },
+            card: this.cards.find((c) => c.id === cardId)!,
+        });
+    };
 
-    moveColumn(event: DragEndEvent) {
+    moveColumn = (event: DragEndEvent) => {
         const { active, over } = event;
-        if (!over || active.id === over.id) return;
+        if (!over || !active || !this.projectId) return;
 
+        // 1. Оптимистичное обновление
         const oldIndex = this.columns.findIndex((col) => col.id === active.id);
         const newIndex = this.columns.findIndex((col) => col.id === over.id);
-
-        // Используем arrayMove для обновления порядка в массиве колонок
         this.columns = arrayMove(this.columns, oldIndex, newIndex);
 
-        // TODO: Вызвать API для сохранения нового порядка
-        // const newOrder = this.columns.map(col => col.id);
-        // axios.patch(`/projects/${this.projectId}/column-order`, { columnOrder: newOrder });
-    }
-}
+        // 2. Отправка на сервер
+        const newOrder = this.columns.map((col) => col.id);
+        websocketService.moveColumn({
+            projectId: this.projectId,
+            columnOrder: newOrder,
+        });
+    };
 
-export default BoardStore;
+    handleDragEnd = (event: DragEndEvent) => {
+        runInAction(() => {
+            this.activeCard = null;
+            this.activeColumn = null;
+        });
+
+        const { active, over } = event;
+
+        // if (!over || active.id === over.id) return; //Неверное условие (когда перетаскиваешь снизу, то over = active)
+        if (!over || !active) return;
+
+        const activeIsColumn = active.data.current?.type === "Column";
+        const activeIsCard = active.data.current?.type === "Card";
+
+        if (activeIsColumn && active.id !== over.id) {
+            this.moveColumn(event);
+        }
+        if (activeIsCard) {
+            this.handleCardDragEnd(event);
+        }
+    };
+}

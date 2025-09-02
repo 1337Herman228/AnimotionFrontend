@@ -1,11 +1,15 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ICard, IColumnCard } from "@/types";
+import { ICard, IBoardColumn } from "@/types";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
 import { CSS } from "@dnd-kit/utilities";
+import SettingsMenu from "@/pages/dashboard/ui/SettingsMenu";
+import { Badge } from "@/components/ui/badge";
+import { GripVertical } from "lucide-react";
+import CreateNewCardBtn from "./CreateNewCard";
 
 interface ColumnProps {
-    column: IColumnCard;
+    column: IBoardColumn;
     cards: ICard[];
     isOverlay?: boolean;
 }
@@ -37,25 +41,34 @@ const Column = ({ column, cards, isOverlay }: ColumnProps) => {
 
     return (
         <div ref={setNodeRef} style={style} className={containerClasses}>
-            <Card className="w-[320px] bg-muted/50">
+            <Card className="w-[320px] bg-muted/65 dark:bg-muted/90 rounded-md py-0 pt-6">
                 <CardHeader
                     {...attributes}
                     {...listeners}
-                    className="flex flex-row justify-between items-center p-4 cursor-grab active:cursor-grabbing"
+                    className="flex flex-row justify-between items-center cursor-grab active:cursor-grabbing select-none"
                 >
-                    <CardTitle className="text-md font-semibold">
-                        {column.title}
-                    </CardTitle>
-                    <span className="text-sm text-muted-foreground">
-                        {cards.length}
-                    </span>
+                    <div className="flex flex-row items-center gap-2">
+                        <GripVertical className="shrink-0" />
+                        <CardTitle className="text-md font-semibold break-all">
+                            {column.title}
+                            {/* ({column.id}) */}
+                        </CardTitle>
+                        <Badge
+                            variant="default"
+                            className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums shrink-0"
+                        >
+                            {cards.length}
+                        </Badge>
+                    </div>
+                    <SettingsMenu className="hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/15 shrink-0" />
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3 p-2">
+                <CardContent className="flex flex-col gap-1.5 p-1.5">
                     <SortableContext items={cards.map((c) => c.id)}>
                         {cards.map((card) => (
                             <TaskCard key={card.id} card={card} />
                         ))}
                     </SortableContext>
+                    <CreateNewCardBtn />
                 </CardContent>
             </Card>
         </div>
