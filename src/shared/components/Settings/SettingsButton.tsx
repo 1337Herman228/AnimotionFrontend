@@ -20,14 +20,12 @@ const SettingsButton = ({
                     className={cn(className, "cursor-pointer")}
                     variant="ghost"
                     size="icon"
-                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
                 >
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
-                {children}
-            </DropdownMenuContent>
+            <DropdownMenuContent>{children}</DropdownMenuContent>
         </DropdownMenu>
     );
 };

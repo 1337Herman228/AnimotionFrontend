@@ -7,7 +7,8 @@ import { useProjectsStore } from "@/shared/stores/projectsStore";
 
 const useDashboardPage = () => {
     const { data: session } = useSession();
-    const { projects, isFetching, error, fetchProjects } = useProjectsStore();
+    const { projects, isFetching, isLoading, error, fetchProjects } =
+        useProjectsStore();
     const axios = useAxios();
 
     useEffect(() => {
@@ -15,7 +16,7 @@ const useDashboardPage = () => {
         fetchProjects(axios, session);
     }, [fetchProjects, axios, session]);
 
-    return { projects, isFetching, error };
+    return { projects, isFetching, isLoading, error };
 };
 
 export default useDashboardPage;

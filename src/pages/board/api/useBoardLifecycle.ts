@@ -25,4 +25,6 @@ export const useBoardLifecycle = () => {
             websocketService.disconnect();
         };
     }, [axios, session, projectId, init, setBoardState]);
+
+    return { projectId };
 };

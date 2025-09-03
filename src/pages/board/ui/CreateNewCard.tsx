@@ -1,14 +1,27 @@
 import { Button } from "@/components/ui/button";
+import { useBoardStore } from "@/shared/stores/boardStore";
+import { IAddCardMessage, IBoardColumn } from "@/types";
 import { Plus } from "lucide-react";
 
 interface CreateNewCardBtnProps {
-    addCard: () => void;
+    column: IBoardColumn;
 }
 
-const CreateNewCardBtn = ({ addCard }: CreateNewCardBtnProps) => {
+const CreateNewCardBtn = ({ column }: CreateNewCardBtnProps) => {
+    const { addCard, projectId } = useBoardStore();
+
+    const template: IAddCardMessage = {
+        projectId: projectId || "",
+        title: "Card" + Math.random().toString(36).substring(2),
+        columnId: column.id,
+        description: "Description...",
+        assigneeId: null,
+        priority: null,
+    };
+
     return (
         <Button
-            onClick={addCard}
+            onClick={() => addCard(template)}
             variant={"ghost"}
             className="cursor-pointer w-full hover:bg-accent-foreground/10 dark:hover:bg-accent-foreground/10 transition-all duration-300 justify-start"
         >

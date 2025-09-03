@@ -1,15 +1,18 @@
 import { create } from "zustand";
 import { arrayMove } from "@dnd-kit/sortable";
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { IBoardColumn, ICard, IBoardProject } from "@/types";
+import { IBoardColumn, ICard, IBoardProject, IAddCardMessage } from "@/types";
 import { websocketService } from "@/services/webSocketService";
 import { AxiosInstance } from "axios";
-import { findColumnByCardId, updateColumns } from "../utils";
+import { findColumnByCardId, updateColumns } from "../utils/functions/index";
 
 interface BoardState {
+    projectId: string | null;
     projectName: string | null;
     columns: IBoardColumn[];
     cards: ICard[];
+    isFetching: boolean;
+    isLoading: boolean;
 
     // Actions
     init: (axios: AxiosInstance, projectId: string) => void;
@@ -17,33 +20,41 @@ interface BoardState {
     handleDragStart: (event: DragStartEvent) => void;
     handleCardDragEnd: (event: DragEndEvent) => void;
     handleColumnDragEnd: (event: DragEndEvent) => void;
-    addCard: () => void;
+    addCard: (message: IAddCardMessage) => void;
+    deleteCard: (cardId: string, columnId: string) => void;
 }
 
 export const useBoardStore = create<BoardState>((set, get) => {
     let sourceColumn: IBoardColumn | null = null;
     let axios: AxiosInstance | null = null;
-    let projectId: string | null = null;
+    let letProjectId: string | null = null;
 
     return {
         // Base state
+        isLoading: true,
+        isFetching: false,
+        projectId: null,
         projectName: null,
         columns: [],
         cards: [],
 
         init: (axiosInstance: AxiosInstance, pId: string) => {
             axios = axiosInstance;
-            projectId = pId;
+            set(() => ({ projectId: pId }));
+            letProjectId = pId;
 
             const fetchProject = async () => {
                 try {
+                    set({ isLoading: true });
                     const response = await axios!.get<IBoardProject>(
-                        `/projects/${projectId}`
+                        `/projects/${letProjectId}`
                     );
                     get().setBoardState(response.data);
                 } catch (err) {
                     // mb set error in future
                     console.error(err);
+                } finally {
+                    set({ isLoading: false });
                 }
             };
             fetchProject();
@@ -85,6 +96,9 @@ export const useBoardStore = create<BoardState>((set, get) => {
             const destColumn =
                 findColumnByCardId(overId, columns) ||
                 columns.find((c) => c.id === overId)!;
+
+            // If card destination not changed
+            if (destColumn === sourceColumn && cardId === overId) return;
 
             // Swap cards order in the same column
             if (sourceColumn.id === destColumn.id) {
@@ -128,10 +142,10 @@ export const useBoardStore = create<BoardState>((set, get) => {
             }
 
             // --- 2. ОТПРАВКА НА СЕРВЕР ---
-            if (!axios || !projectId) return;
+            if (!axios || !letProjectId) return;
 
             websocketService.moveCard({
-                projectId: projectId,
+                projectId: letProjectId,
                 sourceColumn: {
                     id: sourceColumn.id,
                     cardOrder: sourceColumn.cardOrder,
@@ -147,36 +161,36 @@ export const useBoardStore = create<BoardState>((set, get) => {
         handleColumnDragEnd: (event) => {
             const { active, over } = event;
             const { columns } = get();
-            if (!over || !active || !projectId || !columns) return;
+            if (!over || !active || !letProjectId || !columns) return;
 
             const oldIndex = columns.findIndex((c) => c.id === active.id);
             const newIndex = columns.findIndex((c) => c.id === over.id);
+
+            // If column destination not changed
+            if (oldIndex === newIndex) return;
+
             const newColumns = arrayMove(columns, oldIndex, newIndex);
 
             set(() => ({ columns: newColumns }));
 
             const newOrder = newColumns.map((col) => col.id);
             websocketService.moveColumn({
-                projectId: projectId,
+                projectId: letProjectId,
                 columnOrder: newOrder,
             });
         },
 
-        addCard: () => {
-            if (!projectId) return;
-            websocketService.addCard({
-                projectId,
-                title: "new card" + Math.random(),
-                columnId: "68b6fb215d8baf41b878c229",
-                description: "Description...",
-                assigneeId: "68b6fb215d8baf41b878c222",
-                priority: {
-                    id: "68b6fb215d8baf41b878c225",
-                    projectId: null,
-                    value: "NORMAL",
-                    label: "Normal",
-                    color: "#b8e7bc",
-                },
+        addCard: (cardDto: IAddCardMessage) => {
+            if (!letProjectId) return;
+            websocketService.addCard(cardDto);
+        },
+
+        deleteCard: (cardId: string, columnId: string) => {
+            if (!letProjectId) return;
+            websocketService.deleteCard({
+                projectId: letProjectId,
+                deletedCardId: cardId,
+                columnId,
             });
         },
     };

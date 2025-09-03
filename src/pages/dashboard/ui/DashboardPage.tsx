@@ -1,12 +1,13 @@
 import useDashboardPage from "../api";
 import Section from "@/shared/components/Section/Section";
 import ProjectCard from "./ProjectCard";
+import ScreenLoading from "@/shared/components/Loading/ScreenLoading";
 
 const DashboardPage = () => {
-    const { projects, isFetching, error } = useDashboardPage();
+    const { projects, isLoading, error } = useDashboardPage();
 
-    if (isFetching) {
-        return <div>Loading projects...</div>;
+    if (isLoading) {
+        return <ScreenLoading />;
     }
 
     return (

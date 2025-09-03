@@ -10,9 +10,10 @@ import { useSortable } from "@dnd-kit/sortable";
 import { ICard } from "@/types";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
-import { Dot } from "lucide-react";
+import { Dot, GripVertical, UserRound } from "lucide-react";
 import CardSettings from "./CardSettings";
 import { memo } from "react";
+import { timeAgo } from "@/shared/utils/dayjs";
 
 interface TaskCardProps {
     card: ICard;
@@ -42,13 +43,7 @@ const TaskCard = memo(({ card, isOverlay }: TaskCardProps) => {
     }`;
 
     return (
-        <div
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className={cn(cardClasses, "")}
-        >
+        <div ref={setNodeRef} style={style} {...attributes}>
             <Card
                 style={
                     {
@@ -60,11 +55,17 @@ const TaskCard = memo(({ card, isOverlay }: TaskCardProps) => {
                     "border-l-8 rounded-md transition-all duration-300 ease-in-out hover:shadow-lg hover:shadow-accent-foreground/35 select-none gap-3"
                 )}
             >
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div className="flex justify-between gap-2">
-                        <CardTitle className="text-lg font-semibold leading-6">
+                <CardHeader className="grid grid-cols-[auto_36px] gap-0">
+                    <div
+                        {...listeners}
+                        className={cn(
+                            cardClasses,
+                            "flex gap-2 place-items-center hover:bg-accent-foreground/7 transition-all duration-100 rounded-md p-1"
+                        )}
+                    >
+                        <GripVertical className="shrink-0" />
+                        <CardTitle className="text-lg font-semibold leading-6 break-words overflow-hidden">
                             {card.title}
-                            {/* ({card.id}) */}
                         </CardTitle>
                     </div>
                     <CardSettings card={card} />
@@ -82,7 +83,9 @@ const TaskCard = memo(({ card, isOverlay }: TaskCardProps) => {
                     <div className="flex -space-x-2">
                         <Avatar className="h-8 w-8 border-0">
                             <AvatarImage src={card.assigneeId} />
-                            <AvatarFallback>{card.assigneeId}</AvatarFallback>
+                            <AvatarFallback>
+                                <UserRound strokeWidth={1} />
+                            </AvatarFallback>
                         </Avatar>
                     </div>
                     <div className="flex gap-0.5 place-items-center font-medium">
@@ -96,9 +99,9 @@ const TaskCard = memo(({ card, isOverlay }: TaskCardProps) => {
 
                         {card.priority.label}
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                        Updated 2 days ago
-                    </span>
+                    <div className="text-xs text-muted-foreground">
+                        Updated {timeAgo(card.updatedAt)}
+                    </div>
                 </CardFooter>
             </Card>
         </div>

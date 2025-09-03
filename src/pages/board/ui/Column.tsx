@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ICard, IBoardColumn } from "@/types";
+import { ICard, IBoardColumn, IAddCardMessage } from "@/types";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TaskCard from "./TaskCard";
 import { CSS } from "@dnd-kit/utilities";
@@ -9,13 +9,12 @@ import { GripVertical } from "lucide-react";
 import CreateNewCardBtn from "./CreateNewCard";
 
 interface ColumnProps {
-    addCard: () => void;
     column: IBoardColumn;
     cards: ICard[];
     isOverlay?: boolean;
 }
 
-const Column = ({ column, cards, isOverlay, addCard }: ColumnProps) => {
+const Column = ({ column, cards, isOverlay }: ColumnProps) => {
     const {
         setNodeRef,
         attributes,
@@ -42,15 +41,17 @@ const Column = ({ column, cards, isOverlay, addCard }: ColumnProps) => {
 
     return (
         <div ref={setNodeRef} style={style} className={containerClasses}>
-            <Card className="w-[320px] bg-muted/65 dark:bg-muted/90 rounded-md py-0 pt-6">
+            <Card className="w-[320px] bg-muted/65 dark:bg-muted/90 rounded-md py-0 pt-3 gap-3">
                 <CardHeader
                     {...attributes}
-                    {...listeners}
-                    className="flex flex-row justify-between items-center cursor-grab active:cursor-grabbing select-none"
+                    className="flex flex-row items-center select-none"
                 >
-                    <div className="flex flex-row items-center gap-2">
+                    <div
+                        {...listeners}
+                        className="flex flex-row grow-1 items-center gap-2 hover:bg-accent-foreground/7 transition-all duration-100 rounded-md p-1 py-2 cursor-grab active:cursor-grabbing"
+                    >
                         <GripVertical className="shrink-0" />
-                        <CardTitle className="text-md font-semibold break-all">
+                        <CardTitle className="text-md font-semibold break-all text-lg">
                             {column.title}
                             {/* ({column.id}) */}
                         </CardTitle>
@@ -69,7 +70,7 @@ const Column = ({ column, cards, isOverlay, addCard }: ColumnProps) => {
                             <TaskCard key={card.id} card={card} />
                         ))}
                     </SortableContext>
-                    <CreateNewCardBtn addCard={addCard} />
+                    <CreateNewCardBtn column={column} />
                 </CardContent>
             </Card>
         </div>

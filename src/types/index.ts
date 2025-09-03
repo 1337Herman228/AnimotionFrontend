@@ -90,11 +90,12 @@ export interface IAddCardMessage {
     title: string;
     columnId: string;
     description: string;
-    assigneeId: string;
-    priority: ITaskPriority;
+    assigneeId: string | null;
+    priority: ITaskPriority | null;
 }
 
 export interface IDeleteCardMessage {
     projectId: string;
     deletedCardId: string;
+    columnId: string;
 }

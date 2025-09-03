@@ -17,18 +17,20 @@ import {
 import Column from "./Column";
 import TaskCard from "./TaskCard";
 import { createPortal } from "react-dom";
-import { ICard, IBoardColumn } from "@/types";
+import { ICard, IBoardColumn, IAddCardMessage } from "@/types";
 import { useBoardDnD } from "../api/useBoardDnD";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { useBoardLifecycle } from "../api/useBoardLifecycle";
+import ScreenLoading from "@/shared/components/Loading/ScreenLoading";
 
 const BoardPage = () => {
-    useBoardLifecycle();
+    const { projectId } = useBoardLifecycle();
 
     const { activeCard, activeColumn, handleDragStart, handleDragEnd } =
         useBoardDnD();
 
-    const { columns, cards, projectName, addCard } = useBoardStore();
+    const { columns, cards, projectName, isFetching, isLoading } =
+        useBoardStore();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -37,8 +39,8 @@ const BoardPage = () => {
         })
     );
 
-    if (!columns || !cards) {
-        return <div>Loading board...</div>;
+    if (!columns || !cards || isLoading) {
+        return <ScreenLoading />;
     }
 
     const cardsMap = new Map<string, ICard>(
@@ -65,7 +67,6 @@ const BoardPage = () => {
                                 cards={column.cardOrder.map(
                                     (id) => cardsMap.get(id)!
                                 )}
-                                addCard={addCard}
                             />
                         ))}
                     </SortableContext>
@@ -81,7 +82,6 @@ const BoardPage = () => {
                                 <Column
                                     column={activeColumn}
                                     cards={activeColumn.cards}
-                                    addCard={addCard}
                                     isOverlay
                                 />
                             ) : null}
