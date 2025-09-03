@@ -1,23 +1,12 @@
 import { Client, IMessage } from "@stomp/stompjs";
-import { IBoardProject, ICard } from "@/types";
-
-interface MoveCardMessage {
-    projectId: string;
-    sourceColumn: {
-        id: string;
-        cardOrder: string[];
-    };
-    destinationColumn: {
-        id: string;
-        cardOrder: string[];
-    };
-    card: ICard;
-}
-
-interface MoveColumnMessage {
-    projectId: string;
-    columnOrder: string[];
-}
+import {
+    IAddCardMessage,
+    IBoardProject,
+    ICard,
+    IDeleteCardMessage,
+    IMoveCardMessage,
+    IMoveColumnMessage,
+} from "@/types";
 
 class WebSocketService {
     private client: Client | null = null;
@@ -88,13 +77,12 @@ class WebSocketService {
      * Отправляет на сервер команду перемещения карточки.
      * @param message Объект с данными для перемещения.
      */
-    public moveCard(message: MoveCardMessage) {
+    public moveCard(message: IMoveCardMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
                 destination: "/app/board/move-card",
                 body: JSON.stringify(message),
             });
-            // console.log("Sent move-card message:", message);
         } else {
             console.error(
                 "Cannot send message, WebSocket client is not connected."
@@ -106,14 +94,39 @@ class WebSocketService {
      * Отправляет на сервер команду изменения порядка колонок.
      * @param message Объект с новым порядком колонок.
      */
-    public moveColumn(message: MoveColumnMessage) {
+    public moveColumn(message: IMoveColumnMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
-                // Важно: Убедитесь, что на бэкенде есть контроллер, слушающий этот эндпоинт
-                destination: "/app/project/move-column",
+                destination: "/app/board/move-column",
                 body: JSON.stringify(message),
             });
             console.log("Sent move-column message:", message);
+        } else {
+            console.error(
+                "Cannot send message, WebSocket client is not connected."
+            );
+        }
+    }
+
+    public addCard(message: IAddCardMessage) {
+        if (this.client && this.client.active) {
+            this.client.publish({
+                destination: "/app/board/add-card",
+                body: JSON.stringify(message),
+            });
+        } else {
+            console.error(
+                "Cannot send message, WebSocket client is not connected."
+            );
+        }
+    }
+
+    public deleteCard(message: IDeleteCardMessage) {
+        if (this.client && this.client.active) {
+            this.client.publish({
+                destination: "/app/board/delete-card",
+                body: JSON.stringify(message),
+            });
         } else {
             console.error(
                 "Cannot send message, WebSocket client is not connected."

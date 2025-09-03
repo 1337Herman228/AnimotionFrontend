@@ -26,6 +26,7 @@ export interface ICard {
     assigneeId: string;
     createdAt: Date;
     updatedAt: Date;
+    priority: ITaskPriority;
 }
 
 export interface IColumn {
@@ -56,4 +57,44 @@ export interface MoveCardData {
     sourceColumnId: string;
     destinationColumnId: string;
     destinationIndex: number;
+}
+
+export interface IMoveCardMessage {
+    projectId: string;
+    sourceColumn: {
+        id: string;
+        cardOrder: string[];
+    };
+    destinationColumn: {
+        id: string;
+        cardOrder: string[];
+    };
+    card: ICard;
+}
+
+export interface IMoveColumnMessage {
+    projectId: string;
+    columnOrder: string[];
+}
+
+export interface ITaskPriority {
+    id: string;
+    projectId: string | null;
+    value: string;
+    label: string;
+    color: string;
+}
+
+export interface IAddCardMessage {
+    projectId: string;
+    title: string;
+    columnId: string;
+    description: string;
+    assigneeId: string;
+    priority: ITaskPriority;
+}
+
+export interface IDeleteCardMessage {
+    projectId: string;
+    deletedCardId: string;
 }

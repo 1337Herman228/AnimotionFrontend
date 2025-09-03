@@ -4,8 +4,6 @@ import { SessionProvider } from "next-auth/react";
 import "./global.css";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { StoreProvider } from "@/providers/mobx/StoreProvider";
-import { NavigationMenuDemo } from "@/shared/components/Navbar";
 
 export default function RootLayout({
     children,
@@ -26,7 +24,7 @@ export default function RootLayout({
                         enableSystem
                         disableTransitionOnChange
                     >
-                        <StoreProvider>{children}</StoreProvider>
+                        {children}
                         <Toaster />
                     </ThemeProvider>
                 </SessionProvider>

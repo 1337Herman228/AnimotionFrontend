@@ -9,12 +9,13 @@ import { GripVertical } from "lucide-react";
 import CreateNewCardBtn from "./CreateNewCard";
 
 interface ColumnProps {
+    addCard: () => void;
     column: IBoardColumn;
     cards: ICard[];
     isOverlay?: boolean;
 }
 
-const Column = ({ column, cards, isOverlay }: ColumnProps) => {
+const Column = ({ column, cards, isOverlay, addCard }: ColumnProps) => {
     const {
         setNodeRef,
         attributes,
@@ -62,13 +63,13 @@ const Column = ({ column, cards, isOverlay }: ColumnProps) => {
                     </div>
                     <SettingsMenu className="hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/15 shrink-0" />
                 </CardHeader>
-                <CardContent className="flex flex-col gap-1.5 p-1.5">
+                <CardContent className="flex flex-col gap-2.5 px-2.5 pb-2.5">
                     <SortableContext items={cards.map((c) => c.id)}>
                         {cards.map((card) => (
                             <TaskCard key={card.id} card={card} />
                         ))}
                     </SortableContext>
-                    <CreateNewCardBtn />
+                    <CreateNewCardBtn addCard={addCard} />
                 </CardContent>
             </Card>
         </div>

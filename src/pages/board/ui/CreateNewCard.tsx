@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 
-const CreateNewCardBtn = () => {
+interface CreateNewCardBtnProps {
+    addCard: () => void;
+}
+
+const CreateNewCardBtn = ({ addCard }: CreateNewCardBtnProps) => {
     return (
         <Button
+            onClick={addCard}
             variant={"ghost"}
             className="cursor-pointer w-full hover:bg-accent-foreground/10 dark:hover:bg-accent-foreground/10 transition-all duration-300 justify-start"
         >

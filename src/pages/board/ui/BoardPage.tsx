@@ -1,6 +1,5 @@
 "use client";
 
-import { observer } from "mobx-react-lite";
 import {
     DndContext,
     closestCorners,
@@ -14,90 +13,20 @@ import {
     SortableContext,
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-// import useBoardPage from "../api";
-import useBoardPage from "../api/index2";
+import useBoardPage from "../api";
 
 import Column from "./Column";
 import TaskCard from "./TaskCard";
 import { createPortal } from "react-dom";
 import { ICard, IBoardColumn } from "@/types";
-import { useEffect } from "react";
-
-// const BoardPage = () => {
-//     const { boardStore } = useBoardPage();
-
-//     const sensors = useSensors(
-//         useSensor(PointerSensor),
-//         useSensor(KeyboardSensor, {
-//             coordinateGetter: sortableKeyboardCoordinates,
-//         })
-//     );
-
-//     if (boardStore.isFetching) {
-//         return <div>Loading board...</div>;
-//     }
-
-//     const cardsMap = new Map<string, ICard>(
-//         boardStore.cards.map((card: ICard) => [card.id, card])
-//     );
-
-//     return (
-//         <div className="p-4 h-full">
-//             <h1 className="text-2xl font-bold mb-4">
-//                 {boardStore.projectName}
-//             </h1>
-//             <DndContext
-//                 sensors={sensors}
-//                 collisionDetection={closestCorners}
-//                 onDragStart={boardStore.handleDragStart}
-//                 onDragOver={boardStore.handleDragOver}
-//                 onDragEnd={boardStore.handleDragEnd}
-//             >
-//                 <div className="flex gap-4 overflow-x-auto h-full pb-4">
-//                     <SortableContext
-//                         items={boardStore.columns.map(
-//                             (c: IBoardColumn) => c.id
-//                         )}
-//                     >
-//                         {boardStore.columns.map((column: IBoardColumn) => (
-//                             <Column
-//                                 key={column.id}
-//                                 column={column}
-//                                 cards={column.cardOrder.map(
-//                                     (id) => cardsMap.get(id)!
-//                                 )}
-//                             />
-//                         ))}
-//                     </SortableContext>
-//                 </div>
-
-//                 {createPortal(
-//                     <DragOverlay>
-//                         {boardStore.activeCard ? (
-//                             <TaskCard card={boardStore.activeCard} isOverlay />
-//                         ) : null}
-//                         {boardStore.activeColumn ? (
-//                             <Column
-//                                 column={boardStore.activeColumn}
-//                                 cards={boardStore.activeColumn.cards}
-//                                 isOverlay
-//                             />
-//                         ) : null}
-//                     </DragOverlay>,
-//                     document.body
-//                 )}
-//             </DndContext>
-//         </div>
-//     );
-// };
 
 const BoardPage = () => {
     const {
         activeCard,
         activeColumn,
         handleDragStart,
-        handleDragOver,
         handleDragEnd,
+        addCard,
         columns,
         cards,
         projectName,
@@ -125,7 +54,6 @@ const BoardPage = () => {
                 sensors={sensors}
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
                 <div className="flex gap-4 overflow-x-auto h-full pb-4">
@@ -139,6 +67,7 @@ const BoardPage = () => {
                                 cards={column.cardOrder.map(
                                     (id) => cardsMap.get(id)!
                                 )}
+                                addCard={addCard}
                             />
                         ))}
                     </SortableContext>
@@ -154,6 +83,7 @@ const BoardPage = () => {
                                 <Column
                                     column={activeColumn}
                                     cards={activeColumn.cards}
+                                    addCard={addCard}
                                     isOverlay
                                 />
                             ) : null}
@@ -165,4 +95,4 @@ const BoardPage = () => {
     );
 };
 
-export default observer(BoardPage);
+export default BoardPage;
