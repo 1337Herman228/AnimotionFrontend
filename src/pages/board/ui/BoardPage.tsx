@@ -13,24 +13,22 @@ import {
     SortableContext,
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import useBoardPage from "../api";
 
 import Column from "./Column";
 import TaskCard from "./TaskCard";
 import { createPortal } from "react-dom";
 import { ICard, IBoardColumn } from "@/types";
+import { useBoardDnD } from "../api/useBoardDnD";
+import { useBoardStore } from "@/shared/stores/boardStore";
+import { useBoardLifecycle } from "../api/useBoardLifecycle";
 
 const BoardPage = () => {
-    const {
-        activeCard,
-        activeColumn,
-        handleDragStart,
-        handleDragEnd,
-        addCard,
-        columns,
-        cards,
-        projectName,
-    } = useBoardPage();
+    useBoardLifecycle();
+
+    const { activeCard, activeColumn, handleDragStart, handleDragEnd } =
+        useBoardDnD();
+
+    const { columns, cards, projectName, addCard } = useBoardStore();
 
     const sensors = useSensors(
         useSensor(PointerSensor),

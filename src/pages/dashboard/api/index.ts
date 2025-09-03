@@ -1,21 +1,21 @@
 "use client";
 
-import { useStores } from "@/providers/mobx/StoreProvider";
 import useAxios from "@/shared/hooks/useAxios";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useProjectsStore } from "@/shared/stores/projectsStore";
 
 const useDashboardPage = () => {
     const { data: session } = useSession();
-    const { projectStore } = useStores();
+    const { projects, isFetching, error, fetchProjects } = useProjectsStore();
     const axios = useAxios();
 
     useEffect(() => {
-        if (!axios || !projectStore) return;
-        projectStore.fetchProjects(axios, session);
-    }, [projectStore, axios, session]);
+        if (!axios || !fetchProjects) return;
+        fetchProjects(axios, session);
+    }, [fetchProjects, axios, session]);
 
-    return { projectStore };
+    return { projects, isFetching, error };
 };
 
 export default useDashboardPage;

@@ -1,12 +1,11 @@
 import useDashboardPage from "../api";
 import Section from "@/shared/components/Section/Section";
-import { observer } from "mobx-react-lite";
 import ProjectCard from "./ProjectCard";
 
 const DashboardPage = () => {
-    const { projectStore } = useDashboardPage();
+    const { projects, isFetching, error } = useDashboardPage();
 
-    if (projectStore?.isFetching) {
+    if (isFetching) {
         return <div>Loading projects...</div>;
     }
 
@@ -14,7 +13,7 @@ const DashboardPage = () => {
         <Section>
             <h1 className="text-4xl font-semibold mb-8">My Projects</h1>
             <ul className="grid grid-cols-2 gap-4">
-                {projectStore.projects.map((project) => (
+                {projects.map((project) => (
                     <ProjectCard
                         key={project.id}
                         project={{
@@ -46,4 +45,4 @@ const DashboardPage = () => {
     );
 };
 
-export default observer(DashboardPage);
+export default DashboardPage;
