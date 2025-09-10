@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import useAxios from "@/shared/hooks/useAxios";
 import { websocketService } from "@/services/webSocketService";
 import { useBoardStore } from "@/shared/stores/boardStore";
+import { IBoardProject } from "@/types";
 
 export const useBoardLifecycle = () => {
     const { data: session } = useSession();
@@ -19,7 +20,11 @@ export const useBoardLifecycle = () => {
 
         init(axios, projectId);
 
-        websocketService.connect(token, projectId, setBoardState);
+        const handleBoardUpdate = (updatedProject: IBoardProject) => {
+            setBoardState(updatedProject);
+        };
+
+        websocketService.connect(token, projectId, handleBoardUpdate);
 
         return () => {
             websocketService.disconnect();

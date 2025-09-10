@@ -2,7 +2,6 @@ import { Client, IMessage } from "@stomp/stompjs";
 import {
     IAddCardMessage,
     IBoardProject,
-    ICard,
     IDeleteCardMessage,
     IMoveCardMessage,
     IMoveColumnMessage,
@@ -22,7 +21,6 @@ class WebSocketService {
         projectId: string,
         onUpdate: (update: IBoardProject) => void
     ) {
-        // Если клиент уже активен, ничего не делаем, чтобы избежать дублирования соединений.
         if (this.client && this.client.active) {
             console.warn("WebSocket client is already connected.");
             return;
@@ -35,25 +33,15 @@ class WebSocketService {
                 Authorization: `Bearer ${token}`,
             },
 
-            // Включаем подробное логирование для отладки
-            debug: (str) => {
-                console.log(new Date(), "STOMP: " + str);
-            },
-
-            // Пытаться переподключиться каждые 5 секунд в случае разрыва
             reconnectDelay: 5000,
         });
 
-        // Что делать после успешного подключения
         this.client.onConnect = (frame) => {
             const destination = `/topic/project/${projectId}`;
             this.client?.subscribe(destination, (message: IMessage) => {
                 try {
-                    const updatedProjectState: IBoardProject = JSON.parse(
-                        message.body
-                    );
-                    // Вызываем переданный колбэк с новыми данными
-                    onUpdate(updatedProjectState);
+                    const parsedData: IBoardProject = JSON.parse(message.body);
+                    onUpdate(parsedData);
                 } catch (error) {
                     console.error(
                         "Failed to parse WebSocket message body:",
@@ -63,13 +51,11 @@ class WebSocketService {
             });
         };
 
-        // Что делать при ошибке STOMP (например, нет прав на подписку)
         this.client.onStompError = (frame) => {
             console.error("Broker reported error: " + frame.headers["message"]);
             console.error("Additional details: " + frame.body);
         };
 
-        // Активируем клиент для установки соединения
         this.client.activate();
     }
 
@@ -100,7 +86,6 @@ class WebSocketService {
                 destination: "/app/board/move-column",
                 body: JSON.stringify(message),
             });
-            console.log("Sent move-column message:", message);
         } else {
             console.error(
                 "Cannot send message, WebSocket client is not connected."

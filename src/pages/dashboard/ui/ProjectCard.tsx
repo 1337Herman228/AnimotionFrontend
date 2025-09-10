@@ -7,9 +7,10 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import SettingsMenu from "./SettingsMenu";
+import UserAvatar from "@/shared/components/Avatar/UserAvatar";
+import { IMember } from "@/types";
 
 interface ProjectCardProps {
     project: {
@@ -20,10 +21,7 @@ interface ProjectCardProps {
             inProgress: number;
             done: number;
         };
-        members: {
-            image?: string;
-            fallback: string;
-        }[];
+        members: IMember[];
     };
 }
 
@@ -68,15 +66,14 @@ export const ProjectCard = ({ project }: ProjectCardProps) => {
                     <Progress value={progressValue} className="w-full" />
                 </CardContent>
 
-                <CardFooter className="flex justify-between items-center">
-                    <div className="flex -space-x-2">
-                        {project.members.slice(0, 3).map((member, index) => (
-                            <Avatar key={index} className="h-8 w-8 border-0">
-                                <AvatarImage src={member.image} />
-                                <AvatarFallback>
-                                    {member.fallback}
-                                </AvatarFallback>
-                            </Avatar>
+                <CardFooter className="flex justify-between items-center gap-3">
+                    <div className="flex -space-x-2 overflow-hidden">
+                        {project.members.map((member, index) => (
+                            <UserAvatar
+                                src={member.image}
+                                key={index}
+                                className="h-8 w-8 border-0"
+                            />
                         ))}
                     </div>
                     <span className="text-xs text-muted-foreground">

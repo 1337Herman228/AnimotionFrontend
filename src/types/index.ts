@@ -9,11 +9,18 @@ export interface IUser {
     backendToken: string;
 }
 
+export interface IMember {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+}
+
 export interface IProject {
     id: string;
     name: string;
     ownerId: string;
-    memberIds: string[];
+    members: IMember[];
     columnOrder: string[];
 }
 
@@ -23,7 +30,7 @@ export interface ICard {
     description: string;
     columnId: string;
     projectId: string;
-    assigneeId: string;
+    appointedMembers: IMember[];
     createdAt: Date;
     updatedAt: Date;
     priority: ITaskPriority;
@@ -48,7 +55,7 @@ export interface IBoardProject {
     name: string;
     ownerId: string;
     columns: IBoardColumn[];
-    members: IUser[];
+    members: IMember[];
     columnOrder: string[];
 }
 
@@ -90,7 +97,7 @@ export interface IAddCardMessage {
     title: string;
     columnId: string;
     description: string;
-    assigneeId: string | null;
+    appointedMembers: IMember[] | null;
     priority: ITaskPriority | null;
 }
 

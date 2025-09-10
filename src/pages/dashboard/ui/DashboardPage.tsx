@@ -24,20 +24,6 @@ const DashboardPage = () => {
                                 inProgress: 2,
                                 done: 1,
                             },
-                            members: [
-                                {
-                                    image: "https://example.com/avatar1.jpg",
-                                    fallback: "ABC",
-                                },
-                                {
-                                    image: "https://example.com/avatar1.jpg",
-                                    fallback: "A",
-                                },
-                                {
-                                    image: "https://example.com/avatar1.jpg",
-                                    fallback: "A",
-                                },
-                            ],
                         }}
                     />
                 ))}

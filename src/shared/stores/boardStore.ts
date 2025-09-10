@@ -61,17 +61,19 @@ export const useBoardStore = create<BoardState>((set, get) => {
         },
 
         setBoardState: (projectData) => {
+            const cleanProjectData = JSON.parse(JSON.stringify(projectData));
+
             const columnsMap = new Map(
-                projectData.columns.map((col) => [col.id, col])
+                cleanProjectData.columns.map((col: any) => [col.id, col])
             );
-            const sortedColumns = (projectData.columnOrder || [])
-                .map((colId) => columnsMap.get(colId)!)
+            const sortedColumns = (cleanProjectData.columnOrder || [])
+                .map((colId: any) => columnsMap.get(colId)!)
                 .filter(Boolean);
 
             set({
                 projectName: projectData.name,
                 columns: sortedColumns,
-                cards: sortedColumns.flatMap((col) => col.cards),
+                cards: sortedColumns.flatMap((col: any) => col.cards),
             });
         },
 

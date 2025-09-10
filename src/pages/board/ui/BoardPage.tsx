@@ -39,6 +39,8 @@ const BoardPage = () => {
         })
     );
 
+    console.log(cards);
+
     if (!columns || !cards || isLoading) {
         return <ScreenLoading />;
     }

@@ -15,7 +15,7 @@ const CreateNewCardBtn = ({ column }: CreateNewCardBtnProps) => {
         title: "Card" + Math.random().toString(36).substring(2),
         columnId: column.id,
         description: "Description...",
-        assigneeId: null,
+        appointedMembers: null,
         priority: null,
     };
 

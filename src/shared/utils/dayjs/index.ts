@@ -5,7 +5,7 @@ dayjs.extend(relativeTime);
 
 export function timeAgo(date: Date) {
     const seconds = dayjs().diff(date, "second");
-    if (seconds < 10) return "just now";
+    if (seconds < 10) return "Just now";
     if (seconds < 60) return `${seconds}s ago`;
 
     const minutes = dayjs().diff(date, "minute");
