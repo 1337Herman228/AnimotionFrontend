@@ -2,15 +2,13 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { ICard } from "@/types";
 import { Edit } from "lucide-react";
-import EditCardForm from "./EditCardForm";
+import EditCardForm from "../card-dialog/EditCardForm";
 
 interface EditCardMenuItemProps {
     card: ICard;

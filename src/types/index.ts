@@ -57,6 +57,7 @@ export interface IBoardProject {
     columns: IBoardColumn[];
     members: IMember[];
     columnOrder: string[];
+    priorities: ITaskPriority[];
 }
 
 export interface MoveCardData {
@@ -92,7 +93,7 @@ export interface ITaskPriority {
     color: string;
 }
 
-export interface IAddCardMessage {
+export interface ICardMessage {
     projectId: string;
     title: string;
     columnId: string;

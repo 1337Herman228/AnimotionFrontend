@@ -14,8 +14,8 @@ import {
     sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
 
-import Column from "./Column";
-import TaskCard from "./TaskCard";
+import Column from "./Column/Column";
+import TaskCard from "./Card/TaskCard";
 import { createPortal } from "react-dom";
 import { ICard, IBoardColumn, IAddCardMessage } from "@/types";
 import { useBoardDnD } from "../api/useBoardDnD";

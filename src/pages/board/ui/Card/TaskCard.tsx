@@ -10,7 +10,7 @@ import { ICard } from "@/types";
 import { CSS } from "@dnd-kit/utilities";
 import { cn } from "@/lib/utils";
 import { GripVertical, UserRoundX } from "lucide-react";
-import CardSettings from "./CardSettings";
+import CardSettings from "./card-settings/CardSettings";
 import { timeAgo } from "@/shared/utils/dayjs";
 import PriorityBadge from "@/shared/components/Badge/PriorityBadge";
 import TaskMembers from "@/shared/components/TaskMembers/TaskMembers";

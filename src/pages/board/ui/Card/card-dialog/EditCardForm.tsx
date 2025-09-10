@@ -19,43 +19,71 @@ import { Card } from "@/components/ui/card";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { useMemo } from "react";
 import { timeAgo } from "@/shared/utils/dayjs";
-import UserAvatar from "@/shared/components/Avatar/UserAvatar";
-import PriorityBadge from "@/shared/components/Badge/PriorityBadge";
 import ProjectProperty from "./ProjectProperty";
+import PrioritySelect from "./dropdown-menu/PrioritySelect";
+import AssigneeSelect from "./dropdown-menu/AssigneeSelect";
+import { websocketService } from "@/services/webSocketService";
 
 const formSchema = z.object({
     title: z.string().min(2, {
         message: "Title must be at least 2 characters.",
     }),
     description: z.string(),
-    // assigneeId: z.string(),
-    // priority: z.string(),
+    priority: z.object({
+        id: z.string(),
+        projectId: z.string().or(z.null()),
+        color: z.string(),
+        value: z.string(),
+        label: z.string(),
+    }),
+    assignee: z.array(
+        z.object({
+            id: z.string(),
+            name: z.string(),
+            email: z.string(),
+            image: z.string().optional(),
+        })
+    ),
 });
+
+export type TCardFormSchema = z.infer<typeof formSchema>;
 
 interface EditCardFormProps {
     card: ICard;
 }
 
 const EditCardForm = ({ card }: EditCardFormProps) => {
-    const { projectName, columns } = useBoardStore();
+    const { projectName, columns, priorities, members, projectId } =
+        useBoardStore();
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm<TCardFormSchema>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             title: card.title,
             description: card.description,
+            priority: card.priority,
+            assignee: card.appointedMembers,
         },
     });
 
-    const onSubmit = (values: z.infer<typeof formSchema>) => {
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values);
+    const onSubmit = (values: TCardFormSchema) => {
+        const message = {
+            id: card.id,
+            title: values.title,
+            description: values.description,
+            priority: values.priority,
+            columnId: currentColumn?.id as string,
+            projectId: projectId as string,
+            appointedMembers: values.assignee,
+        };
+        websocketService.editCard(message);
     };
 
     const currentColumn = useMemo(() => {
         return columns.find((column) => column.id === card.columnId);
     }, [columns, card.columnId]);
+
+    const currentValues = form.watch();
 
     return (
         <Form {...form}>
@@ -104,19 +132,10 @@ const EditCardForm = ({ card }: EditCardFormProps) => {
                             title="Project"
                             propertyValue={[{ value: projectName as string }]}
                         />
-                        <ProjectProperty
-                            title="Priority"
-                            propertyValue={[
-                                {
-                                    value: card.priority.label,
-                                    icon: (
-                                        <PriorityBadge
-                                            color={card.priority.color}
-                                            letter={card.priority.value}
-                                        />
-                                    ),
-                                },
-                            ]}
+                        <PrioritySelect
+                            priorities={priorities}
+                            form={form}
+                            currentValues={currentValues}
                         />
                         <ProjectProperty
                             title="State"
@@ -124,20 +143,10 @@ const EditCardForm = ({ card }: EditCardFormProps) => {
                                 { value: currentColumn?.title as string },
                             ]}
                         />
-                        <ProjectProperty
-                            title="Assignee"
-                            propertyValue={card.appointedMembers.map(
-                                (member) => ({
-                                    value: member.name,
-                                    icon: (
-                                        <UserAvatar
-                                            src={member.image}
-                                            className="h-5 w-5"
-                                            svgClassName="p-0.5"
-                                        />
-                                    ),
-                                })
-                            )}
+                        <AssigneeSelect
+                            members={members}
+                            form={form}
+                            currentValues={currentValues}
                         />
                         <ProjectProperty
                             title="Updated"

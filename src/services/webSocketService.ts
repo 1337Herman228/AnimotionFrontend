@@ -1,7 +1,8 @@
 import { Client, IMessage } from "@stomp/stompjs";
 import {
-    IAddCardMessage,
+    ICardMessage,
     IBoardProject,
+    ICard,
     IDeleteCardMessage,
     IMoveCardMessage,
     IMoveColumnMessage,
@@ -93,7 +94,7 @@ class WebSocketService {
         }
     }
 
-    public addCard(message: IAddCardMessage) {
+    public addCard(message: ICardMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
                 destination: "/app/board/add-card",
@@ -110,6 +111,19 @@ class WebSocketService {
         if (this.client && this.client.active) {
             this.client.publish({
                 destination: "/app/board/delete-card",
+                body: JSON.stringify(message),
+            });
+        } else {
+            console.error(
+                "Cannot send message, WebSocket client is not connected."
+            );
+        }
+    }
+
+    public editCard(message: ICardMessage) {
+        if (this.client && this.client.active) {
+            this.client.publish({
+                destination: "/app/board/edit-card",
                 body: JSON.stringify(message),
             });
         } else {

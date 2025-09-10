@@ -1,7 +1,14 @@
 import { create } from "zustand";
 import { arrayMove } from "@dnd-kit/sortable";
 import { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { IBoardColumn, ICard, IBoardProject, IAddCardMessage } from "@/types";
+import {
+    IBoardColumn,
+    ICard,
+    IBoardProject,
+    ICardMessage,
+    ITaskPriority,
+    IMember,
+} from "@/types";
 import { websocketService } from "@/services/webSocketService";
 import { AxiosInstance } from "axios";
 import { findColumnByCardId, updateColumns } from "../utils/functions/index";
@@ -13,6 +20,8 @@ interface BoardState {
     cards: ICard[];
     isFetching: boolean;
     isLoading: boolean;
+    priorities: ITaskPriority[];
+    members: IMember[];
 
     // Actions
     init: (axios: AxiosInstance, projectId: string) => void;
@@ -20,7 +29,7 @@ interface BoardState {
     handleDragStart: (event: DragStartEvent) => void;
     handleCardDragEnd: (event: DragEndEvent) => void;
     handleColumnDragEnd: (event: DragEndEvent) => void;
-    addCard: (message: IAddCardMessage) => void;
+    addCard: (message: ICardMessage) => void;
     deleteCard: (cardId: string, columnId: string) => void;
 }
 
@@ -35,6 +44,8 @@ export const useBoardStore = create<BoardState>((set, get) => {
         isFetching: false,
         projectId: null,
         projectName: null,
+        priorities: [],
+        members: [],
         columns: [],
         cards: [],
 
@@ -71,6 +82,8 @@ export const useBoardStore = create<BoardState>((set, get) => {
                 .filter(Boolean);
 
             set({
+                priorities: projectData.priorities,
+                members: projectData.members,
                 projectName: projectData.name,
                 columns: sortedColumns,
                 cards: sortedColumns.flatMap((col: any) => col.cards),
@@ -182,7 +195,7 @@ export const useBoardStore = create<BoardState>((set, get) => {
             });
         },
 
-        addCard: (cardDto: IAddCardMessage) => {
+        addCard: (cardDto: ICardMessage) => {
             if (!letProjectId) return;
             websocketService.addCard(cardDto);
         },
