@@ -1,6 +1,6 @@
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
-import { api } from "../axios";
+import { api } from "../../axios/api";
 
 const useAxios = () => {
     const { data: session } = useSession();

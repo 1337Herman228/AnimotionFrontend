@@ -1,4 +1,4 @@
-import useAxios from "./useAxios";
+import useAxios from "./lib/useAxios";
 import { MoveCardData } from "@/types";
 
 const useBoardApi = () => {

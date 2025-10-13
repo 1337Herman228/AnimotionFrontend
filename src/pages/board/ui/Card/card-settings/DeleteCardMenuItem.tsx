@@ -1,4 +1,4 @@
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { DropdownMenuItem } from "@/shared/components/ui/dropdown-menu";
 import { ICard } from "@/types";
 import { Delete } from "lucide-react";
 

@@ -3,13 +3,13 @@ import {
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/dropdown-menu";
+import { cn } from "@/shared/utils/lib/cn";
 import ProjectProperty from "../ProjectProperty";
 import { TCardFormSchema } from "../EditCardForm";
 import { UseFormReturn } from "react-hook-form";
 import { IMember } from "@/types";
-import UserAvatar from "@/shared/components/Avatar/UserAvatar";
+import UserAvatar from "@/entities/user-avatar/ui/UserAvatar";
 
 interface AssigneeSelectProps {
     currentValues: TCardFormSchema;

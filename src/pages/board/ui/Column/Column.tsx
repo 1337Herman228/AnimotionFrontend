@@ -1,10 +1,15 @@
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+} from "@/shared/components/ui/card";
 import { ICard, IBoardColumn, ICardMessage } from "@/types";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TaskCard from "../Card/TaskCard";
 import { CSS } from "@dnd-kit/utilities";
 import SettingsMenu from "@/pages/dashboard/ui/SettingsMenu";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/shared/components/ui/badge";
 import { GripVertical } from "lucide-react";
 import CreateNewCardBtn from "../Card/CreateNewCard";
 

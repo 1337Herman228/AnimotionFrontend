@@ -1,5 +1,5 @@
+import Section from "@/shared/components/ui/section";
 import useDashboardPage from "../api";
-import Section from "@/shared/components/Section/Section";
 import ProjectCard from "./ProjectCard";
 import ScreenLoading from "@/shared/components/Loading/ScreenLoading";
 

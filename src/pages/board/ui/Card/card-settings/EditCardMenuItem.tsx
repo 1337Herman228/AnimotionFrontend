@@ -1,23 +1,32 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
     Dialog,
     DialogContent,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+} from "@/shared/components/ui/dialog";
+import { DropdownMenuItem } from "@/shared/components/ui/dropdown-menu";
 import { ICard } from "@/types";
 import { Edit } from "lucide-react";
 import EditCardForm from "../card-dialog/EditCardForm";
+import { useState } from "react";
 
 interface EditCardMenuItemProps {
     card: ICard;
 }
 
 const EditCardMenuItem = ({ card }: EditCardMenuItemProps) => {
+    const [isEditCardDialogOpen, setIsEditCardDialogOpen] =
+        useState<boolean>(false);
+
+    const handleClose = () => setIsEditCardDialogOpen(false);
+
     return (
         <DropdownMenuItem asChild>
-            <Dialog>
+            <Dialog
+                open={isEditCardDialogOpen}
+                onOpenChange={setIsEditCardDialogOpen}
+            >
                 <DialogTrigger asChild>
                     <Button
                         variant="ghost"
@@ -37,7 +46,7 @@ const EditCardMenuItem = ({ card }: EditCardMenuItemProps) => {
                     className="sm:max-w-[1200px] sm:w-[95vw] md:w-[90vw] sm:max-h-[90vh] overflow-auto gap-5"
                 >
                     <DialogTitle />
-                    <EditCardForm card={card} />
+                    <EditCardForm card={card} handleDialogClose={handleClose} />
                 </DialogContent>
             </Dialog>
         </DropdownMenuItem>

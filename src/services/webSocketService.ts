@@ -2,7 +2,6 @@ import { Client, IMessage } from "@stomp/stompjs";
 import {
     ICardMessage,
     IBoardProject,
-    ICard,
     IDeleteCardMessage,
     IMoveCardMessage,
     IMoveColumnMessage,

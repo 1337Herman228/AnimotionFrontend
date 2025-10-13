@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils/lib/cn";
 import Spinner from "../Spinner/Spinner";
 
 interface ScreenLoadingProps {

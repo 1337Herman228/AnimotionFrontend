@@ -5,11 +5,11 @@ import {
     CardFooter,
     CardHeader,
     CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+} from "@/shared/components/ui/card";
+import { Progress } from "@/shared/components/ui/progress";
+import { Separator } from "@/shared/components/ui/separator";
 import SettingsMenu from "./SettingsMenu";
-import UserAvatar from "@/shared/components/Avatar/UserAvatar";
+import UserAvatar from "@/entities/user-avatar/ui/UserAvatar";
 import { IMember } from "@/types";
 
 interface ProjectCardProps {

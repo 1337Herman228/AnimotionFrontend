@@ -1,6 +1,6 @@
 "use client";
 
-import useAxios from "@/shared/hooks/useAxios";
+import useAxios from "@/shared/hooks/lib/useAxios";
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useProjectsStore } from "@/shared/stores/projectsStore";

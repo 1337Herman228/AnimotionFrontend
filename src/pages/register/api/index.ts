@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import useAxios from "@/shared/hooks/useAxios";
+import useAxios from "@/shared/hooks/lib/useAxios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 

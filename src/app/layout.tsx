@@ -3,7 +3,7 @@
 import { SessionProvider } from "next-auth/react";
 import "./global.css";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/shared/components/ui/sonner";
 
 export default function RootLayout({
     children,

@@ -2,12 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/utils/lib/cn";
 import {
     NavigationMenuItem,
     NavigationMenuLink,
     navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from "@/shared/components/ui/navigation-menu";
 
 export default function NavLink({
     href,

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { IAddCardMessage, IBoardColumn } from "@/types";
 import { Plus } from "lucide-react";

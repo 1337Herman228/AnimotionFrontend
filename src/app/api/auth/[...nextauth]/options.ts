@@ -1,4 +1,4 @@
-import { api } from "@/shared/axios";
+import { api } from "@/shared/axios/api";
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 

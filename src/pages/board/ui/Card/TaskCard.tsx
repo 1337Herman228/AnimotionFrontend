@@ -4,16 +4,16 @@ import {
     CardTitle,
     CardFooter,
     CardContent,
-} from "@/components/ui/card";
+} from "@/shared/components/ui/card";
 import { useSortable } from "@dnd-kit/sortable";
 import { ICard } from "@/types";
 import { CSS } from "@dnd-kit/utilities";
-import { cn } from "@/lib/utils";
 import { GripVertical, UserRoundX } from "lucide-react";
 import CardSettings from "./card-settings/CardSettings";
-import { timeAgo } from "@/shared/utils/dayjs";
 import PriorityBadge from "@/shared/components/Badge/PriorityBadge";
-import TaskMembers from "@/shared/components/TaskMembers/TaskMembers";
+import TaskMembers from "@/features/task-members/ui/TaskMembers";
+import { timeAgo } from "@/shared/utils/lib/dayjs";
+import { cn } from "@/shared/utils/lib/cn";
 
 interface TaskCardProps {
     card: ICard;

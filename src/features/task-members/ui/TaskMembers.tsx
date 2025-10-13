@@ -1,6 +1,6 @@
 import { IMember } from "@/types";
 import React from "react";
-import UserAvatar from "../Avatar/UserAvatar";
+import UserAvatar from "../../../entities/user-avatar/ui/UserAvatar";
 import { readableColor } from "polished";
 
 interface TaskMembersProps {

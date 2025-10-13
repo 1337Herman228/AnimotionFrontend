@@ -10,9 +10,9 @@ import {
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu";
+} from "@/shared/components/ui/navigation-menu";
 import NavLink from "../NavLink";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import { signOut } from "next-auth/react";
 
 export function NavigationMenuDemo() {

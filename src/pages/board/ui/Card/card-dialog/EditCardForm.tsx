@@ -4,25 +4,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
     Form,
     FormControl,
     FormField,
     FormItem,
     FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "@/shared/components/ui/form";
+import { Input } from "@/shared/components/ui/input";
 import { ICard } from "@/types";
-import { Textarea } from "@/components/ui/textarea";
-import { Card } from "@/components/ui/card";
+import { Textarea } from "@/shared/components/ui/textarea";
+import { Card } from "@/shared/components/ui/card";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { useMemo } from "react";
-import { timeAgo } from "@/shared/utils/dayjs";
 import ProjectProperty from "./ProjectProperty";
 import PrioritySelect from "./dropdown-menu/PrioritySelect";
 import AssigneeSelect from "./dropdown-menu/AssigneeSelect";
 import { websocketService } from "@/services/webSocketService";
+import { timeAgo } from "@/shared/utils/lib/dayjs";
 
 const formSchema = z.object({
     title: z.string().min(2, {
@@ -50,9 +50,10 @@ export type TCardFormSchema = z.infer<typeof formSchema>;
 
 interface EditCardFormProps {
     card: ICard;
+    handleDialogClose: () => void;
 }
 
-const EditCardForm = ({ card }: EditCardFormProps) => {
+const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
     const { projectName, columns, priorities, members, projectId } =
         useBoardStore();
 
@@ -77,6 +78,7 @@ const EditCardForm = ({ card }: EditCardFormProps) => {
             appointedMembers: values.assignee,
         };
         websocketService.editCard(message);
+        handleDialogClose();
     };
 
     const currentColumn = useMemo(() => {

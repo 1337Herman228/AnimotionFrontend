@@ -1,20 +1,25 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/dropdown-menu";
+import { cn } from "@/shared/utils/lib/cn";
 import { MoreHorizontal } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 
 const SettingsButton = ({
     children,
     className,
     ...props
 }: React.ComponentProps<"button">) => {
+    // const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+    // const handleClose = () => setIsSettingsOpen(false);
+
     return (
-        <DropdownMenu>
+        <DropdownMenu
+        // open={isSettingsOpen} onOpenChange={setIsSettingsOpen}
+        >
             <DropdownMenuTrigger asChild>
                 <Button
                     className={cn(className, "cursor-pointer")}
@@ -25,7 +30,14 @@ const SettingsButton = ({
                     <MoreHorizontal className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>{children}</DropdownMenuContent>
+            <DropdownMenuContent
+            // onClick={(e) => {
+            //     e.stopPropagation();
+            //     handleClose();
+            // }}
+            >
+                {children}
+            </DropdownMenuContent>
         </DropdownMenu>
     );
 };

@@ -1,4 +1,9 @@
 {
     "vscode-pets.theme": "forest",
-    "vscode-pets.throwBallWithMouse": true
+    "vscode-pets.throwBallWithMouse": true,
+    "markfiles.colorMarkedFile": "both",
+    "markfiles.autoloadFromScope": true,
+    "workbench.colorCustomizations": {
+        "markfiles.markedFileColor": "#7ad108"
+    }
 }
