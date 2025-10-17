@@ -1,0 +1,150 @@
+
+класс webSocketService -> переделать и разделить по слоям. Сейчас отвечает за логику перемещения колонок и карточек.
+Должен открывать соединение когда выбирается проект и открывается борда.
+Логика с перемещением карточек и колонок должна разделиться для features move-card,
+
+widgets (имеют общие состояния и наполняют entities + features, делая запросы получения данных)
+    kanban-board
+        api
+            listen-board -> открытие/закрытие вебсокета и прослушивание входящих изменений для стейта борды
+        ui
+            board
+                Board.tsx
+                EmptyBoard.tsx
+            card
+                CardList.tsx
+                CardListItem.tsx
+                MemoizedCard.tsx
+            column
+                ColumnList.tsx
+                ColumnListItem.tsx
+                MemoizedColumn.tsx
+
+
+entities (чистые компоненты имеющие свои внутреннее автономное состояние, отображающие сущности бизнес-логики)
+    board
+        @x
+            ... -> кросс-импорт (схемы, типы и тп...)
+        api
+            service -> функции с http запросами на crud 
+            contracts -> схемы dto'шек для http запросов
+            endpoints -> вспомогательный класс с методами, которые строят правильный url для запросов 
+            types -> конвертированные типы из схем
+        model
+            contracts -> схемы для использования самим компонентом
+            types -> конвертированные типы из схем
+        lib
+            ... -> всякие функции хелперы
+        ui
+            ...
+        index.ts -> publicAPI
+    column
+         @x
+            ... -> кросс-импорт (схемы, типы и тп...)
+        api
+            service -> функции с http запросами на crud колонок
+            contracts -> схемы dto'шек для http запросов
+            endpoints -> вспомогательный класс с методами, которые строят правильный url для запросов 
+            types -> конвертированные типы из схем
+        model
+            contracts -> схемы для использования самим компонентом
+            types -> конвертированные типы из схем
+        lib
+            ... -> всякие функции хелперы
+        ui
+            Column.tsx - композитный компонент со своим контекстом
+        index.ts -> publicAPI
+    card
+        @x
+            ... -> кросс-импорт (схемы, типы и тп...)
+        api
+            service -> функции с http запросами на crud карточек
+            contracts -> схемы dto'шек для http запросов
+            endpoints -> вспомогательный класс с методами, которые строят правильный url для запросов 
+            types -> конвертированные типы из схем
+        model
+            contracts -> схемы для использования самим компонентом
+            types -> конвертированные типы из схем
+        lib
+            ... -> всякие функции хелперы
+        ui
+            Card.tsx - композитный компонент со своим контекстом
+        index.ts -> publicAPI
+    user (в основном тут типы, схемы, запросы)
+        @x
+            ... -> кросс-импорт (схемы, типы и тп...)
+        api
+            service -> функции с http запросами на crud
+            contracts -> схемы dto'шек для http запросов
+            endpoints -> вспомогательный класс с методами, которые строят правильный url для запросов 
+            types -> конвертированные типы из схем
+        model
+            contracts -> схемы для использования самим компонентом
+            types -> конвертированные типы из схем
+        index.ts -> publicAPI
+
+
+features (бизнес-логика (use cases) - обычно действия и глаголы)
+    card 
+        move-card
+            api 
+                useMoveCard -> отправка запроса 'move-card' по вебсокету
+            ui
+                MoveCardSelect -> UI, за который будет перетягиваться карточка
+            index.ts -> PublicAPI
+        add-card
+            api 
+                useAddCard -> отправка запроса 'add-card' по вебсокету
+            model
+                contracts -> схема добавления карточки
+                types
+            ui
+                Модалка и форма добавления карточки
+            index.ts -> PublicAPI
+        edit-card
+            api 
+                useEditCard -> отправка запроса 'edit-card' по вебсокету
+            model
+                contracts -> схема добавления карточки
+                types
+            ui
+                Модалка и форма редактирования карточки
+            index.ts -> PublicAPI
+        delete-card
+            api 
+                useDeleteCard -> отправка запроса 'delete-card' по вебсокету
+            ui
+                Модалка и форма удаления карточки
+            index.ts -> PublicAPI
+    column
+        move-column
+            api 
+                useMoveColumn -> отправка запроса 'move-column' по вебсокету
+            ui
+                MoveColumnSelect -> UI, за который будет перетягиваться колонка
+            index.ts -> PublicAPI
+        add-column
+            все аналогично card
+        edit-column
+            все аналогично card
+        delete-column
+            все аналогично card
+    board
+        add-board
+            все аналогично card
+        delete-board
+            все аналогично card
+        edit-board
+            все аналогично card
+    drag-and-drop
+        api
+            useUpdateCardOrder -> хук для общения с сервером и отправки текущего состояния борды
+            useUpdateColumnOrder -> хук для общения с сервером и отправки текущего состояния борды
+        model
+            types
+            useDndState -> store -> хранения состояния борды, которое затем будет передаваться чистым компонентам 
+            useCardDragHandlers -> обработчики для перетягивания карточек
+            useColumnDragHandlers -> обработчики для перетягивания колонок
+        index.ts
+
+

@@ -10,12 +10,6 @@ import {
 class WebSocketService {
     private client: Client | null = null;
 
-    /**
-     * Устанавливает соединение с WebSocket-сервером и подписывается на обновления проекта.
-     * @param token JWT для аутентификации.
-     * @param projectId ID проекта для подписки.
-     * @param onUpdate Колбэк-функция, которая будет вызываться при получении обновления.
-     */
     public connect(
         token: string,
         projectId: string,
@@ -28,15 +22,13 @@ class WebSocketService {
 
         this.client = new Client({
             brokerURL: "ws://localhost:8080/ws",
-
             connectHeaders: {
                 Authorization: `Bearer ${token}`,
             },
-
             reconnectDelay: 5000,
         });
 
-        this.client.onConnect = (frame) => {
+        this.client.onConnect = () => {
             const destination = `/topic/project/${projectId}`;
             this.client?.subscribe(destination, (message: IMessage) => {
                 try {
@@ -59,10 +51,6 @@ class WebSocketService {
         this.client.activate();
     }
 
-    /**
-     * Отправляет на сервер команду перемещения карточки.
-     * @param message Объект с данными для перемещения.
-     */
     public moveCard(message: IMoveCardMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
@@ -76,10 +64,6 @@ class WebSocketService {
         }
     }
 
-    /**
-     * Отправляет на сервер команду изменения порядка колонок.
-     * @param message Объект с новым порядком колонок.
-     */
     public moveColumn(message: IMoveColumnMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
@@ -132,9 +116,6 @@ class WebSocketService {
         }
     }
 
-    /**
-     * Закрывает WebSocket-соединение.
-     */
     public disconnect() {
         if (this.client) {
             this.client.deactivate();
@@ -144,5 +125,4 @@ class WebSocketService {
     }
 }
 
-// Экспортируем один-единственный экземпляр сервиса (Singleton pattern)
 export const websocketService = new WebSocketService();
