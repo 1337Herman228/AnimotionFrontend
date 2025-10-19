@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import useAxios from "@/shared/hooks/lib/useAxios";
 import { websocketService } from "@/services/webSocketService";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { IBoardProject } from "@/types";
+import { useAxios } from "@/shared/api";
 
 export const useBoardLifecycle = () => {
     const { data: session } = useSession();

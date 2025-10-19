@@ -10,6 +10,60 @@ import {
 class WebSocketService {
     private client: Client | null = null;
 
+    // public connect(
+    //     token: string,
+    //     projectId: string,
+    //     onUpdate: (update: IBoardProject) => void
+    // ) {
+    //     if (this.client && this.client.active) {
+    //         console.warn("WebSocket client is already connected.");
+    //         return;
+    //     }
+
+    //     this.client = new Client({
+    //         brokerURL: "ws://localhost:8080/ws",
+    //         connectHeaders: {
+    //             Authorization: `Bearer ${token}`,
+    //         },
+    //         reconnectDelay: 5000,
+    //     });
+
+    //     this.client.onConnect = () => {
+    //         const destination = `/topic/project/${projectId}`;
+    //         this.client?.subscribe(destination, (message: IMessage) => {
+    //             try {
+    //                 const parsedData: IBoardProject = JSON.parse(message.body);
+    //                 onUpdate(parsedData);
+    //             } catch (error) {
+    //                 console.error(
+    //                     "Failed to parse WebSocket message body:",
+    //                     error
+    //                 );
+    //             }
+    //         });
+    //     };
+
+    //     this.client.onStompError = (frame) => {
+    //         console.error("Broker reported error: " + frame.headers["message"]);
+    //         console.error("Additional details: " + frame.body);
+    //     };
+
+    //     this.client.activate();
+    // }
+
+    // public moveCard(message: IMoveCardMessage) {
+    //     if (this.client && this.client.active) {
+    //         this.client.publish({
+    //             destination: "/app/board/move-card",
+    //             body: JSON.stringify(message),
+    //         });
+    //     } else {
+    //         console.error(
+    //             "Cannot send message, WebSocket client is not connected."
+    //         );
+    //     }
+    // }
+
     public connect(
         token: string,
         projectId: string,
@@ -29,6 +83,7 @@ class WebSocketService {
         });
 
         this.client.onConnect = () => {
+            // 1. ВАША СТАРАЯ ПОДПИСКА (остается без изменений)
             const destination = `/topic/project/${projectId}`;
             this.client?.subscribe(destination, (message: IMessage) => {
                 try {
@@ -41,6 +96,18 @@ class WebSocketService {
                     );
                 }
             });
+
+            // =============================================================
+            // 2. ВРЕМЕННАЯ ПОДПИСКА ДЛЯ ТЕСТИРОВАНИЯ (добавьте этот блок)
+            const replyQueue = "/user/queue/replies";
+            console.log(`Subscribing to reply queue: ${replyQueue}`);
+
+            this.client?.subscribe(replyQueue, (message: IMessage) => {
+                console.log("✅ --- PERSONAL REPLY RECEIVED! --- ✅");
+                console.log("Reply body:", JSON.parse(message.body));
+                console.log("------------------------------------");
+            });
+            // =============================================================
         };
 
         this.client.onStompError = (frame) => {
@@ -53,9 +120,17 @@ class WebSocketService {
 
     public moveCard(message: IMoveCardMessage) {
         if (this.client && this.client.active) {
+            // =============================================================
+            // 3. ВРЕМЕННО ДОБАВЬТЕ correlationId ПРИ ОТПРАВКЕ
+            const messageWithCorrelation = {
+                ...message,
+                correlationId: `test-${Math.random()}`, // Простой уникальный ID для теста
+            };
+            // =============================================================
+
             this.client.publish({
                 destination: "/app/board/move-card",
-                body: JSON.stringify(message),
+                body: JSON.stringify(messageWithCorrelation), // <-- Отправляем сообщение с ID
             });
         } else {
             console.error(

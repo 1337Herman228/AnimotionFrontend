@@ -3,32 +3,32 @@
 import { SessionProvider } from "next-auth/react";
 import "./global.css";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { Toaster } from "@/shared/components/ui/sonner";
+import { Toaster } from "@/shared/ui/sonner";
 
 export default function RootLayout({
-    children,
+  children,
 }: Readonly<{
-    children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en" suppressHydrationWarning>
-            <body>
-                <SessionProvider
-                    refetchOnWindowFocus={false}
-                    refetchInterval={60 * 60} // update every 60 minutes
-                    refetchWhenOffline={false}
-                >
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        {children}
-                        <Toaster />
-                    </ThemeProvider>
-                </SessionProvider>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <SessionProvider
+          refetchOnWindowFocus={false}
+          refetchInterval={60 * 60} // update every 60 minutes
+          refetchWhenOffline={false}
+        >
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </SessionProvider>
+      </body>
+    </html>
+  );
 }

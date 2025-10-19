@@ -1,13 +1,13 @@
 import * as v from "valibot";
-import { CardMemberSchema, TaskPrioritySchema } from "../model/contracts";
+import { CardMemberSchema, CardPrioritySchema } from "../model/contracts";
 
 export const AddCardDtoSchema = v.object({
     title: v.string(),
     description: v.string(),
     columnId: v.string(),
     projectId: v.string(),
-    appointedMembers: v.array(CardMemberSchema),
-    priority: TaskPrioritySchema,
+    appointedMembers: v.nullable(v.array(CardMemberSchema)),
+    priority: v.nullable(CardPrioritySchema),
 });
 
 export const DeleteCardDtoSchema = v.object({
@@ -24,3 +24,16 @@ export const EditCardDtoSchema = v.intersect([
     v.partial(AddCardDtoSchema),
     CardIdDtoSchema,
 ]);
+
+export const MoveCardDtoSchema = v.object({
+    projectId: v.string(),
+    sourceColumn: v.object({
+        id: v.string(),
+        cardOrder: v.array(v.string()),
+    }),
+    destinationColumn: v.object({
+        id: v.string(),
+        cardOrder: v.array(v.string()),
+    }),
+    cardId: v.string(),
+});

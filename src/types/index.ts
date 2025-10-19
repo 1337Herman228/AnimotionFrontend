@@ -77,7 +77,7 @@ export interface IMoveCardMessage {
         id: string;
         cardOrder: string[];
     };
-    card: ICard;
+    cardId: string;
 }
 
 export interface IMoveColumnMessage {

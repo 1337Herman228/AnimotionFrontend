@@ -8,6 +8,7 @@ import {
     ICardMessage,
     ITaskPriority,
     IMember,
+    IMoveCardMessage,
 } from "@/types";
 import { websocketService } from "@/services/webSocketService";
 import { AxiosInstance } from "axios";
@@ -31,6 +32,7 @@ interface BoardState {
     handleColumnDragEnd: (event: DragEndEvent) => void;
     addCard: (message: ICardMessage) => void;
     deleteCard: (cardId: string, columnId: string) => void;
+    moveCard: (data: IMoveCardMessage) => void;
 }
 
 export const useBoardStore = create<BoardState>((set, get) => {
@@ -169,8 +171,24 @@ export const useBoardStore = create<BoardState>((set, get) => {
                     id: destColumn.id,
                     cardOrder: destColumn.cardOrder,
                 },
-                card: cards.find((c) => c.id === cardId)!,
+                cardId: cardId,
             });
+        },
+
+        moveCard: (data: IMoveCardMessage) => {
+            const { columns, cards } = get();
+            set(() => ({
+                columns: updateColumns(columns, [
+                    findColumnByCardId(data.destinationColumn.id, columns)!,
+                    sourceColumn!,
+                ]),
+                cards: cards.map((card) => {
+                    if (card.id === data.cardId) {
+                        card.columnId = data.destinationColumn.id;
+                    }
+                    return card;
+                }),
+            }));
         },
 
         handleColumnDragEnd: (event) => {

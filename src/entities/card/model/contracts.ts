@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-export const TaskPrioritySchema = v.object({
+export const CardPrioritySchema = v.object({
     id: v.string(),
     projectId: v.nullable(v.string()),
     value: v.string(),
@@ -24,7 +24,7 @@ export const CardSchema = v.object({
     appointedMembers: v.array(CardMemberSchema),
     createdAt: v.date(),
     updatedAt: v.date(),
-    priority: TaskPrioritySchema,
+    priority: CardPrioritySchema,
 });
 
 export const CardsSchema = v.array(CardSchema);
