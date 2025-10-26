@@ -3,20 +3,19 @@
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useProjectsStore } from "@/shared/stores/projectsStore";
-import { useAxios } from "@/shared/api";
+import { api } from "@/shared/api/axiosInstance";
 
 const useDashboardPage = () => {
-  const { data: session } = useSession();
-  const { projects, isFetching, isLoading, error, fetchProjects } =
-    useProjectsStore();
-  const axios = useAxios();
+    const { data: session } = useSession();
+    const { projects, isFetching, isLoading, error, fetchProjects } =
+        useProjectsStore();
 
-  useEffect(() => {
-    if (!axios || !fetchProjects) return;
-    fetchProjects(axios, session);
-  }, [fetchProjects, axios, session]);
+    useEffect(() => {
+        if (!api || !fetchProjects) return;
+        fetchProjects(api, session);
+    }, [fetchProjects, api, session]);
 
-  return { projects, isFetching, isLoading, error };
+    return { projects, isFetching, isLoading, error };
 };
 
 export default useDashboardPage;

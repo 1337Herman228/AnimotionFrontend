@@ -12,7 +12,7 @@ export type TEditCardDtoSchema = InferOutput<typeof EditCardDtoSchema>;
 export type TDeleteCardDtoSchema = InferOutput<typeof DeleteCardDtoSchema>;
 export type TMoveCardDtoSchema = InferOutput<typeof MoveCardDtoSchema>;
 
-export type TcardService = {
+export type TCardService = {
     client: Client | null;
     addCard: (arg: TAddCardDtoSchema) => void;
     deleteCard: (arg: TDeleteCardDtoSchema) => void;

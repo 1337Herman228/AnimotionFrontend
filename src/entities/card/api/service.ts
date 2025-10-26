@@ -1,6 +1,6 @@
 import {
     TAddCardDtoSchema,
-    TcardService,
+    TCardService,
     TDeleteCardDtoSchema,
     TEditCardDtoSchema,
     TMoveCardDtoSchema,
@@ -17,7 +17,7 @@ import publish from "@/shared/api/ws-publish";
 import { websocketManager } from "@/shared/api/ws-manager";
 import { TBoardProjectSchema } from "@/entities/board/@x/card";
 
-export const cardService: TcardService = {
+export const cardService: TCardService = {
     client: null,
 
     addCard(data: TAddCardDtoSchema) {

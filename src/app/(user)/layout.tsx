@@ -1,5 +1,3 @@
-"use client";
-
 import { NavigationMenuDemo } from "@/shared/components/Navbar";
 
 export default function UserLayout({

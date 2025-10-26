@@ -4,11 +4,10 @@ import { useParams } from "next/navigation";
 import { websocketService } from "@/services/webSocketService";
 import { useBoardStore } from "@/shared/stores/boardStore";
 import { IBoardProject } from "@/types";
-import { useAxios } from "@/shared/api";
+import { api } from "@/shared/api/axiosInstance";
 
 export const useBoardLifecycle = () => {
     const { data: session } = useSession();
-    const axios = useAxios();
     const params = useParams();
     const projectId = params?.projectId as string;
 
@@ -16,9 +15,10 @@ export const useBoardLifecycle = () => {
 
     useEffect(() => {
         const token = session?.user?.backendToken;
-        if (!axios || !projectId || !token) return;
+        console.log("token", token);
+        if (!api || !projectId || !token) return;
 
-        init(axios, projectId);
+        init(api, projectId);
 
         const handleBoardUpdate = (updatedProject: IBoardProject) => {
             setBoardState(updatedProject);
@@ -29,7 +29,7 @@ export const useBoardLifecycle = () => {
         return () => {
             websocketService.disconnect();
         };
-    }, [axios, session, projectId, init, setBoardState]);
+    }, [api, session, projectId, init, setBoardState]);
 
     return { projectId };
 };

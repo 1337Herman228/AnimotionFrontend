@@ -1,32 +1,25 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IMoveCardMessage, IBoardProject } from "@/types";
 import { cardService } from "@/entities/card";
-import { useBoardStore } from "@/shared/stores/boardStore";
 import { findColumnByCardId, updateColumns } from "@/shared/utils/functions";
 
 const boardQueryKey = (projectId: string) => ["board", projectId];
 
-export const useMoveCardMutation = (projectId: string) => {
+export const useMoveCardMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: (data: IMoveCardMessage) => cardService.moveCard(data),
-
         onMutate: async (movedCardData) => {
-            const queryKey = boardQueryKey(projectId);
-            // 1. Отмена текущих запросов, чтобы избежать race conditions
+            const queryKey = boardQueryKey(movedCardData.projectId);
+
             await queryClient.cancelQueries({ queryKey });
-            // 2. Сохранение предыдущего состояния для отката
+
             const previousBoardState =
                 queryClient.getQueryData<IBoardProject>(queryKey);
-            // 3. Оптимистичное обновление кеша
+
             queryClient.setQueryData<IBoardProject>(queryKey, (oldData) => {
                 if (!oldData) return undefined;
-
-                // =======================================================
-                // !!! ВАША ЛОГИКА ОПТИМИСТИЧНОГО ПЕРЕМЕЩЕНИЯ КАРТОЧКИ !!!
-                // Используйте movedCardData для локального обновления oldData
-                // =======================================================
 
                 const updatedColumns = updateColumns(oldData.columns, [
                     findColumnByCardId(
@@ -54,32 +47,27 @@ export const useMoveCardMutation = (projectId: string) => {
                     cards: updatedCards,
                 };
 
-                return updatedData; // Возвращаем локально обновленный объект
+                return updatedData;
             });
 
-            // Возвращаем контекст для onError
-            return { previousBoardState };
+            return { previousBoardState, projectId: movedCardData.projectId };
         },
-
-        // Откат: срабатывает, если промис из mutationFn был отклонен (сервер прислал ERROR)
-        onError: (err, newCardData, context) => {
+        onError: (err, _, context) => {
             console.error("Failed to move card, rolling back...", err);
             if (context?.previousBoardState) {
                 queryClient.setQueryData(
-                    boardQueryKey(projectId),
+                    boardQueryKey(context.projectId),
                     context.previousBoardState
                 );
             }
-            // Здесь вы можете вывести тост-уведомление об ошибке
         },
-
-        // Синхронизация: срабатывает после успеха ИЛИ ошибки
-        onSettled: () => {
-            // Инвалидация заставит TanStack Query запросить свежие данные
-            // (или подождать, пока они придут по общей рассылке /topic/project/{id})
+        onSettled: (_, __, context) => {
             queryClient.invalidateQueries({
-                queryKey: boardQueryKey(projectId),
+                queryKey: boardQueryKey(context.projectId),
             });
+        },
+        meta: {
+            errorMessage: "Failed to move card. Please try again later",
         },
     });
 };
