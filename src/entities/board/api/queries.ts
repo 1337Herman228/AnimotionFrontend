@@ -1,20 +1,16 @@
 import { queryOptions } from "@tanstack/react-query";
-
 import { boardService } from "./service";
 
 export const boardQueries = {
-    all: () => ["boards"],
-    lists: () => [...boardQueries.all(), "list"],
-    list: () =>
+    all: () =>
         queryOptions({
-            queryKey: boardQueries.lists(),
+            queryKey: ["projects"],
             queryFn: boardService.getAllBoards,
         }),
-    details: () => [...boardQueries.all(), "detail"],
-    detail: (id: string) =>
+    byId: (id?: string | null) =>
         queryOptions({
-            queryKey: [...boardQueries.details(), id],
-            queryFn: () => boardService.getBoardById({ boardId: id }),
+            queryKey: ["projects", id],
+            queryFn: () => boardService.getBoardById(id!),
             enabled: !!id,
         }),
 };

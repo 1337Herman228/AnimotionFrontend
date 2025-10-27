@@ -24,6 +24,13 @@ export interface IProject {
     columnOrder: string[];
 }
 
+export interface IProjectSummary {
+    id: string;
+    name: string;
+    ownerId: string;
+    members: IMember[];
+}
+
 export interface ICard {
     id: string;
     title: string;
@@ -31,8 +38,8 @@ export interface ICard {
     columnId: string;
     projectId: string;
     appointedMembers: IMember[];
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     priority: ITaskPriority;
 }
 

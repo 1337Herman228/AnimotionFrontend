@@ -19,10 +19,12 @@ export const useCardDragHandlers = ({
     const { mutate: moveCard } = useMoveCardMutation();
 
     const recentlyDraggedOverId = useRef<UniqueIdentifier | null>(null);
+    const sourceColumnId = useRef<string | null>(null);
 
     const onDragStart = ({ active }: DragStartEvent) => {
         if (!active || active.data.current?.type !== "card") return;
         setActiveCard(active.data.current.card);
+        sourceColumnId.current = active.data.current.card.columnId;
     };
 
     const onDragOver = ({ active, over }: DragOverEvent) => {
@@ -98,29 +100,29 @@ export const useCardDragHandlers = ({
         if (
             !active ||
             active.data.current?.type !== "card" ||
-            !recentlyDraggedOverId.current
+            !recentlyDraggedOverId.current ||
+            !sourceColumnId.current
         ) {
             return;
         }
 
         const activeCard = cards.find((c) => c.id === active.id);
-        const lastDraggedOverCard = cards.find(
-            (c) => c.id === recentlyDraggedOverId!.current
-        );
+
+        console.log("onDragEnd", activeCard, sourceColumnId.current);
 
         if (activeCard) {
             moveCard({
                 projectId: activeCard.projectId,
                 sourceColumn: {
-                    id: activeCard.columnId,
+                    id: sourceColumnId.current,
                     cardOrder: columns.find(
-                        (c) => c.id === activeCard.columnId
+                        (c) => c.id === sourceColumnId.current
                     )!.cardOrder,
                 },
                 destinationColumn: {
-                    id: lastDraggedOverCard!.columnId,
+                    id: activeCard.columnId,
                     cardOrder: columns.find(
-                        (c) => c.id === lastDraggedOverCard!.columnId
+                        (c) => c.id === activeCard.columnId
                     )!.cardOrder,
                 },
                 cardId: activeCard.id,

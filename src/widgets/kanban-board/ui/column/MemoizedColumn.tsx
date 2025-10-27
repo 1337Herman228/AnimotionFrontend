@@ -18,8 +18,8 @@ import { CardList } from "../card/CardList";
 type MemoizedColumnProps = {
     column: ColumnTypes.TColumnSchema;
     isOverlay?: boolean;
-    draggableAttributes: DraggableAttributes;
-    draggableListeners: DraggableSyntheticListeners;
+    draggableAttributes?: DraggableAttributes;
+    draggableListeners?: DraggableSyntheticListeners;
 };
 
 export const MemoizedColumn = memo(

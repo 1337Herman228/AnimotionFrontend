@@ -9,6 +9,8 @@ import { ColumnContracts } from "@/entities/column";
 export const useDndState = (
     initialColumns: ColumnTypes.TColumnsSchema | undefined
 ) => {
+    console.log("initialColumns", initialColumns);
+
     const parsedColumns = useMemo(
         () => parse(ColumnContracts.ColumnsSchema, initialColumns),
         [initialColumns]

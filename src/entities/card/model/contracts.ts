@@ -22,8 +22,10 @@ export const CardSchema = v.object({
     columnId: v.string(),
     projectId: v.string(),
     appointedMembers: v.array(CardMemberSchema),
-    createdAt: v.date(),
-    updatedAt: v.date(),
+    // createdAt: v.date(),
+    // updatedAt: v.date(),
+    createdAt: v.string(),
+    updatedAt: v.string(),
     priority: CardPrioritySchema,
 });
 

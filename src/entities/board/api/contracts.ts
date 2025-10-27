@@ -12,3 +12,10 @@ export const BoardProjectSchema = v.object({
     columnOrder: v.array(v.string()),
     priorities: v.array(CardPrioritySchema),
 });
+
+export const ProjectSummarySchema = v.object({
+    id: v.string(),
+    name: v.string(),
+    ownerId: v.string(),
+    members: v.array(MemberSchema),
+});

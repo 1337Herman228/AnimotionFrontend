@@ -67,6 +67,7 @@ class WebSocketManager {
     // Обработчик ответов из персональной очереди
     private handleReply = (message: IMessage) => {
         try {
+            console.log("✅ --- PERSONAL REPLY RECEIVED! --- ✅");
             const response = JSON.parse(message.body);
             // Имена полей соответствуют вашему WebSocketReply.java
             const { correlationId, status, payload, error } = response;
@@ -94,7 +95,7 @@ class WebSocketManager {
     public publishAndAwaitReply<T>(
         destination: string,
         body: object,
-        timeout = 10000
+        timeout = 3000
     ): Promise<T> {
         return new Promise((resolve, reject) => {
             if (!this.client || !this.client.active) {

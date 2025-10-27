@@ -1,14 +1,12 @@
 import { MoveCardData } from "@/types";
-import { useAxios } from "../api";
+import { api } from "../api/axiosInstance";
 
 const useBoardApi = () => {
-  const axios = useAxios();
+    const moveCard = (data: MoveCardData) => {
+        return api.post(`/board/cards/move`, data);
+    };
 
-  const moveCard = (data: MoveCardData) => {
-    return axios.post(`/board/cards/move`, data);
-  };
-
-  return { moveCard };
+    return { moveCard };
 };
 
 export default useBoardApi;

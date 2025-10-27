@@ -13,7 +13,7 @@ export const ColumnList = () => {
             items={columnsIds || []}
             // strategy={horizontalListSortingStrategy}
         >
-            <div className="desktop:pl-6 tablet:pl-8 flex gap-[34px] pl-5">
+            <div className="desktop:pl-6 tablet:pl-8 flex gap-5 pl-5">
                 {columns?.map((column) => (
                     <MemoizedColumn column={column} key={column.id} />
                 ))}

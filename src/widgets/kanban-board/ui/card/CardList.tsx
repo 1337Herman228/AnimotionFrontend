@@ -17,7 +17,7 @@ export const CardList = ({ cards }: CardListProps) => {
     return (
         <SortableContext items={cardsIds || []}>
             {filteredCards?.length > 0 && (
-                <div>
+                <div className="flex flex-col gap-2 ">
                     {filteredCards.map((card) => (
                         <MemoizedCard key={card.id} card={card} />
                     ))}
