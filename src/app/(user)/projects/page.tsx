@@ -1,7 +1,7 @@
 "use client";
 
-import DashboardPage from "@/pages/dashboard/ui/DashboardPage";
+import { BoardListPage } from "@/pages/boards-list/ui/BoardListPage";
 
-const Page = () => <DashboardPage />;
+const Page = () => <BoardListPage />;
 
 export default Page;

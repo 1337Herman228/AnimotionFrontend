@@ -7,7 +7,6 @@ import type {
 } from "@dnd-kit/core";
 import { useDndSortable } from "@/shared/lib/useDndSortable";
 import { SortableContext } from "@dnd-kit/sortable";
-import SettingsMenu from "@/pages/dashboard/ui/SettingsMenu";
 import { Badge } from "@/shared/ui/badge";
 import { GripVertical } from "lucide-react";
 import { CreateCardButton } from "@/features/card/add-card";
@@ -38,6 +37,8 @@ export const MemoizedColumn = memo(
                 attributes: { roleDescription: `Column: ${column.title}` },
             });
 
+        console.log("column", column.title, "| cards", column.cards);
+
         return (
             <div
                 ref={setNodeRef}
@@ -61,10 +62,11 @@ export const MemoizedColumn = memo(
                                 variant="default"
                                 className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums shrink-0 font-bold"
                             >
-                                {cards.length}
+                                {column.cards.length}
                             </Badge>
                         </div>
-                        <SettingsMenu className="hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/15 shrink-0" />
+                        {/* Will import from features */}
+                        {/* <SettingsMenu className="hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/15 shrink-0" /> */}
                     </BoardColumn.Header>
                     <BoardColumn.Content>
                         <SortableContext items={cards.map((c) => c.id)}>

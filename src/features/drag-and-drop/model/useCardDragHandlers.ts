@@ -6,7 +6,7 @@ import type {
 } from "@dnd-kit/core";
 import type { TCardDragHandlers } from "./types";
 
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useMoveCardMutation } from "../api/useMoveCard";
 
@@ -21,78 +21,93 @@ export const useCardDragHandlers = ({
     const recentlyDraggedOverId = useRef<UniqueIdentifier | null>(null);
     const sourceColumnId = useRef<string | null>(null);
 
-    const onDragStart = ({ active }: DragStartEvent) => {
-        if (!active || active.data.current?.type !== "card") return;
-        setActiveCard(active.data.current.card);
-        sourceColumnId.current = active.data.current.card.columnId;
-    };
+    const onDragStart = useCallback(
+        ({ active }: DragStartEvent) => {
+            if (!active || active.data.current?.type !== "card") return;
+            setActiveCard(active.data.current.card);
+            sourceColumnId.current = active.data.current.card.columnId;
+        },
+        [setActiveCard, sourceColumnId]
+    );
 
-    const onDragOver = ({ active, over }: DragOverEvent) => {
-        if (!over || active.id === over.id) return;
+    const onDragOver = useCallback(
+        ({ active, over }: DragOverEvent) => {
+            if (!over || active.id === over.id) return;
 
-        const isActiveACard = active.data.current?.type === "card";
-        const isDraggingOverACard = over.data.current?.type === "card";
-        const isDraggingOverAColumn = over.data.current?.type === "column";
+            const isActiveACard = active.data.current?.type === "card";
+            const isDraggingOverACard = over.data.current?.type === "card";
+            const isDraggingOverAColumn = over.data.current?.type === "column";
 
-        if (!isActiveACard) return;
+            if (!isActiveACard) return;
 
-        if (isDraggingOverACard) {
-            setTimeout(() => {
-                setCards((prevCards) => {
-                    const activeCardIndex = prevCards.findIndex(
-                        (c) => c.id === active.id
-                    );
-                    const overCardIndex = prevCards.findIndex(
-                        (c) => c.id === over.id
-                    );
+            if (isDraggingOverACard) {
+                console.time("DraggingOverACard");
 
-                    const activeCard = prevCards[activeCardIndex];
-                    const overCard = prevCards[overCardIndex];
+                setTimeout(() => {
+                    setCards((prevCards) => {
+                        const activeCardIndex = prevCards.findIndex(
+                            (c) => c.id === active.id
+                        );
+                        const overCardIndex = prevCards.findIndex(
+                            (c) => c.id === over.id
+                        );
 
-                    recentlyDraggedOverId.current = over.id;
+                        const activeCard = prevCards[activeCardIndex];
+                        const overCard = prevCards[overCardIndex];
 
-                    if (
-                        activeCard &&
-                        overCard &&
-                        activeCard.columnId !== overCard.columnId
-                    ) {
-                        activeCard.columnId = overCard.columnId;
+                        recentlyDraggedOverId.current = over.id;
+
+                        if (
+                            activeCard &&
+                            overCard &&
+                            activeCard.columnId !== overCard.columnId
+                        ) {
+                            activeCard.columnId = overCard.columnId;
+
+                            return arrayMove(
+                                prevCards,
+                                activeCardIndex,
+                                Math.max(0, overCardIndex - 1)
+                            );
+                        }
 
                         return arrayMove(
                             prevCards,
                             activeCardIndex,
-                            Math.max(0, overCardIndex - 1)
+                            overCardIndex
+                        );
+                    });
+                }, 0);
+                console.timeEnd("DraggingOverACard");
+            }
+
+            if (isDraggingOverAColumn) {
+                console.time("DraggingOverAColumn");
+                setCards((prevCards) => {
+                    const activeCardIndex = prevCards.findIndex(
+                        (c) => c.id === active.id
+                    );
+                    const activeCard = prevCards[activeCardIndex];
+
+                    recentlyDraggedOverId.current = over.id;
+
+                    if (activeCard) {
+                        activeCard.columnId = over.id as string;
+
+                        return arrayMove(
+                            prevCards,
+                            activeCardIndex,
+                            activeCardIndex
                         );
                     }
 
-                    return arrayMove(prevCards, activeCardIndex, overCardIndex);
+                    return prevCards;
                 });
-            }, 0);
-        }
-
-        if (isDraggingOverAColumn) {
-            setCards((prevCards) => {
-                const activeCardIndex = prevCards.findIndex(
-                    (c) => c.id === active.id
-                );
-                const activeCard = prevCards[activeCardIndex];
-
-                recentlyDraggedOverId.current = over.id;
-
-                if (activeCard) {
-                    activeCard.columnId = over.id as string;
-
-                    return arrayMove(
-                        prevCards,
-                        activeCardIndex,
-                        activeCardIndex
-                    );
-                }
-
-                return prevCards;
-            });
-        }
-    };
+                console.timeEnd("DraggingOverAColumn");
+            }
+        },
+        [setCards, recentlyDraggedOverId]
+    );
 
     const onDragEnd = ({ active }: DragEndEvent) => {
         setActiveCard(null);

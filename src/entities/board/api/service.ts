@@ -1,18 +1,22 @@
 import { parse } from "valibot";
 import { api } from "@/shared/api/axiosInstance";
 import { boardApiEndpoints } from "./endpoints";
-import { BoardProjectSchema, ProjectSummarySchema } from "./contracts";
+import {
+    BoardSchema,
+    BoardSummarySchema,
+    BoardsSummarySchema,
+} from "./contracts";
 
 export const boardService = {
     async getAllBoards() {
         const response = await api.get(boardApiEndpoints.root);
-        const parsedData = parse(ProjectSummarySchema, response.data);
+        const parsedData = parse(BoardsSummarySchema, response.data);
         return parsedData;
     },
 
     async getBoardById(id: string) {
         const response = await api.get(boardApiEndpoints.byId(id));
-        const parsedData = parse(BoardProjectSchema, response.data);
+        const parsedData = parse(BoardSchema, response.data);
         return parsedData;
     },
 

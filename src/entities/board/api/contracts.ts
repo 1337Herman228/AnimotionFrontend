@@ -3,7 +3,7 @@ import { ColumnSchema } from "@/entities/column/@x/board";
 import { MemberSchema } from "@/entities/user/@x/board";
 import * as v from "valibot";
 
-export const BoardProjectSchema = v.object({
+export const BoardSchema = v.object({
     id: v.string(),
     name: v.string(),
     ownerId: v.string(),
@@ -13,9 +13,27 @@ export const BoardProjectSchema = v.object({
     priorities: v.array(CardPrioritySchema),
 });
 
-export const ProjectSummarySchema = v.object({
+export const BoardSummarySchema = v.object({
     id: v.string(),
     name: v.string(),
     ownerId: v.string(),
     members: v.array(MemberSchema),
 });
+export const BoardsSummarySchema = v.array(BoardSummarySchema);
+
+export const BoardStat = v.object({
+    value: v.string(),
+    label: v.string(),
+    count: v.number(),
+});
+export const BoardStats = v.array(BoardStat);
+
+export const MockBoardSummarySchema = v.object({
+    id: v.string(),
+    name: v.string(),
+    ownerId: v.string(),
+    members: v.array(MemberSchema),
+    stats: BoardStats,
+    lastUpdated: v.string(),
+});
+export const MockBoardsSummarySchema = v.array(MockBoardSummarySchema);

@@ -5,7 +5,7 @@ import { KanbanDragOverlay } from "../dnd/KanbanDragOverlay";
 import { useQuery } from "@tanstack/react-query";
 import { boardQueries } from "@/entities/board";
 import { useParams } from "next/navigation";
-import ScreenLoading from "@/shared/components/Loading/ScreenLoading";
+import ScreenLoading from "@/shared/ui/screen-loading";
 
 export const Board = () => {
     const params = useParams();
@@ -18,10 +18,7 @@ export const Board = () => {
         error,
     } = useQuery({
         ...boardQueries.byId(projectId),
-        retry: 1,
     });
-
-    console.log("board", board);
 
     if (isPending) return <ScreenLoading />;
 
