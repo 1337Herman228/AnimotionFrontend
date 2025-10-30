@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { CardMemberSchema, CardPrioritySchema } from "../model/contracts";
+import { ColumnsSchema } from "@/entities/column/@x/card";
 
 export const AddCardDtoSchema = v.object({
     title: v.string(),
@@ -26,6 +27,7 @@ export const EditCardDtoSchema = v.intersect([
 ]);
 
 export const MoveCardDtoSchema = v.object({
+    updatedColumns: ColumnsSchema,
     projectId: v.string(),
     sourceColumn: v.object({
         id: v.string(),

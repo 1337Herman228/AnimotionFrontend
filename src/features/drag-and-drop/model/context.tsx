@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import { api } from "@/shared/api/axiosInstance";
 import { IBoardProject } from "@/types";
 import { websocketManager } from "@/shared/api/ws-manager";
+import { addCardsToColumns } from "../lib/addCardsToColumns";
 
 const DragAndDropContext = createContext<DragAndDropContext | null>(null);
 
@@ -63,7 +64,12 @@ export const DragAndDropProvider = ({
     // const announcements = useGetAccessibilityAnnouncements({ columns, cards });
 
     const value = useMemo(
-        () => ({ columns, cards, activeCard, activeColumn }),
+        () => ({
+            columns: addCardsToColumns(columns, cards),
+            cards,
+            activeCard,
+            activeColumn,
+        }),
         [columns, cards, activeCard, activeColumn]
     );
 
@@ -73,8 +79,8 @@ export const DragAndDropProvider = ({
         if (!api || !projectId || !token) return;
 
         const handleBoardUpdate = (updatedProject: IBoardProject) => {
-            setColumns(updatedProject.columns);
-            setCards(updatedProject.columns.flatMap((c) => c.cards));
+            // setColumns(updatedProject.columns);
+            // setCards(updatedProject.columns.flatMap((c) => c.cards));
         };
 
         websocketManager.connect(token, projectId, handleBoardUpdate);

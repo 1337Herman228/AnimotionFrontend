@@ -4,12 +4,12 @@ import { boardService } from "./service";
 export const boardQueries = {
     all: () =>
         queryOptions({
-            queryKey: ["projects"],
+            queryKey: ["board"],
             queryFn: boardService.getAllBoards,
         }),
     byId: (id?: string | null) =>
         queryOptions({
-            queryKey: ["projects", id],
+            queryKey: ["board", id],
             queryFn: () => boardService.getBoardById(id!),
             enabled: !!id,
         }),

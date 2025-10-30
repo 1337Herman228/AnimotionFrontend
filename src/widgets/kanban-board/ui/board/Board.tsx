@@ -20,6 +20,8 @@ export const Board = () => {
         ...boardQueries.byId(projectId),
     });
 
+    console.log("board", board);
+
     if (isPending) return <ScreenLoading />;
 
     return (

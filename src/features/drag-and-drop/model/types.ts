@@ -4,21 +4,25 @@ import { Dispatch, ReactNode, SetStateAction } from "react";
 
 export type TCardDragHandlers = {
     cards: CardTypes.TCardSchema[];
-    columns: ColumnTypes.TColumnsSchema;
+    columns: ColumnTypes.TColumnsWhithoutCardsSchema;
     setCards: Dispatch<SetStateAction<CardTypes.TCardsSchema>>;
     setActiveCard: Dispatch<SetStateAction<CardTypes.TCardSchema | null>>;
 };
 
 export type TColumnDragHandlers = {
-    columns: ColumnTypes.TColumnsSchema;
-    setColumns: Dispatch<SetStateAction<ColumnTypes.TColumnsSchema>>;
-    setActiveColumn: Dispatch<SetStateAction<ColumnTypes.TColumnSchema | null>>;
+    columns: ColumnTypes.TColumnsWhithoutCardsSchema;
+    setColumns: Dispatch<
+        SetStateAction<ColumnTypes.TColumnsWhithoutCardsSchema>
+    >;
+    setActiveColumn: Dispatch<
+        SetStateAction<ColumnTypes.TColumnWhithoutCardsSchema | null>
+    >;
 };
 
 export type DragAndDropContext = {
     columns: ColumnTypes.TColumnsSchema;
     cards: CardTypes.TCardsSchema;
-    activeColumn: ColumnTypes.TColumnSchema | null;
+    activeColumn: ColumnTypes.TColumnWhithoutCardsSchema | null;
     activeCard: CardTypes.TCardSchema | null;
 };
 

@@ -7,5 +7,11 @@ export const ColumnSchema = v.object({
     id: v.string(),
     title: v.string(),
 });
-
 export const ColumnsSchema = v.array(ColumnSchema);
+
+export const ColumnWhithoutCardsSchema = v.object({
+    cardOrder: v.array(v.string()),
+    id: v.string(),
+    title: v.string(),
+});
+export const ColumnsWhithoutCardsSchema = v.array(ColumnWhithoutCardsSchema);

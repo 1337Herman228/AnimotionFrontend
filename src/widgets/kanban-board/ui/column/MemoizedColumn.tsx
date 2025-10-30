@@ -37,7 +37,7 @@ export const MemoizedColumn = memo(
                 attributes: { roleDescription: `Column: ${column.title}` },
             });
 
-        console.log("column", column.title, "| cards", column.cards);
+        // console.log("column", column.title, "| cards", column.cards);
 
         return (
             <div

@@ -9,6 +9,7 @@ import type { TCardDragHandlers } from "./types";
 import { useCallback, useRef } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useMoveCardMutation } from "../api/useMoveCard";
+import { addCardsToColumns } from "../lib/addCardsToColumns";
 
 export const useCardDragHandlers = ({
     cards,
@@ -123,22 +124,24 @@ export const useCardDragHandlers = ({
 
         const activeCard = cards.find((c) => c.id === active.id);
 
-        console.log("onDragEnd", activeCard, sourceColumnId.current);
-
         if (activeCard) {
+            const updatedColumns = addCardsToColumns(columns, cards);
+
             moveCard({
+                updatedColumns,
                 projectId: activeCard.projectId,
                 sourceColumn: {
                     id: sourceColumnId.current,
-                    cardOrder: columns.find(
-                        (c) => c.id === sourceColumnId.current
-                    )!.cardOrder,
+                    cardOrder:
+                        updatedColumns.find(
+                            (c) => c.id === sourceColumnId.current
+                        )?.cardOrder || [],
                 },
                 destinationColumn: {
                     id: activeCard.columnId,
-                    cardOrder: columns.find(
-                        (c) => c.id === activeCard.columnId
-                    )!.cardOrder,
+                    cardOrder:
+                        updatedColumns.find((c) => c.id === activeCard.columnId)
+                            ?.cardOrder || [],
                 },
                 cardId: activeCard.id,
             });

@@ -1,23 +1,19 @@
 import type { CardTypes } from "@/entities/card";
 import type { ColumnTypes } from "@/entities/column";
-
 import { useMemo, useState } from "react";
 import { parse } from "valibot";
-
-import { ColumnContracts } from "@/entities/column";
+import { DndDataSchema } from "./contracts";
 
 export const useDndState = (
-    initialColumns: ColumnTypes.TColumnsSchema | undefined
+    initialColumns?: ColumnTypes.TColumnsSchema | undefined
 ) => {
-    console.log("initialColumns", initialColumns);
-
-    const parsedColumns = useMemo(
-        () => parse(ColumnContracts.ColumnsSchema, initialColumns),
+    const { columns: parsedColumns, cards: parsedCards } = useMemo(
+        () => parse(DndDataSchema, initialColumns),
         [initialColumns]
     );
 
     const [columns, setColumns] = useState(parsedColumns);
-    const [cards, setCards] = useState(parsedColumns.flatMap((c) => c.cards));
+    const [cards, setCards] = useState(parsedCards);
     const [prevInitialColumns, setPrevInitialColumns] =
         useState(initialColumns);
 
@@ -26,18 +22,18 @@ export const useDndState = (
     );
 
     const [activeColumn, setActiveColumn] =
-        useState<ColumnTypes.TColumnSchema | null>(null);
+        useState<ColumnTypes.TColumnWhithoutCardsSchema | null>(null);
 
     if (initialColumns !== prevInitialColumns) {
         setPrevInitialColumns(initialColumns);
 
-        const parsedColumns = parse(
-            ColumnContracts.ColumnsSchema,
+        const { columns: parsedColumns, cards: parsedCards } = parse(
+            DndDataSchema,
             initialColumns
         );
 
         setColumns(parsedColumns);
-        setCards(parsedColumns.flatMap((c) => c.cards));
+        setCards(parsedCards);
     }
 
     return {
