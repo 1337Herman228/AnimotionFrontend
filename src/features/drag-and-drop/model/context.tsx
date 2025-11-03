@@ -1,6 +1,6 @@
 import type { DragAndDropContext, DragAndDropProviderProps } from "./types";
 
-import { createContext, use, useEffect, useMemo } from "react";
+import { createContext, use, useMemo } from "react";
 import {
     DndContext,
     MouseSensor,
@@ -12,11 +12,7 @@ import {
 import { useCardDragHandlers } from "./useCardDragHandlers";
 import { useColumnDragHandlers } from "./useColumnDragHandlers";
 import { useDndState } from "./useDndState";
-import { useSession } from "next-auth/react";
-import { useParams } from "next/navigation";
-import { api } from "@/shared/api/axiosInstance";
-import { IBoardProject } from "@/types";
-import { websocketManager } from "@/shared/api/ws-manager";
+
 import { addCardsToColumns } from "../lib/addCardsToColumns";
 
 const DragAndDropContext = createContext<DragAndDropContext | null>(null);
@@ -35,10 +31,6 @@ export const DragAndDropProvider = ({
         setColumns,
         setCards,
     } = useDndState(initialColumns);
-
-    const { data: session } = useSession();
-    const params = useParams();
-    const projectId = params?.projectId as string;
 
     const cardDragHandlers = useCardDragHandlers({
         cards,
@@ -68,27 +60,12 @@ export const DragAndDropProvider = ({
             columns: addCardsToColumns(columns, cards),
             cards,
             activeCard,
-            activeColumn,
+            activeColumn: activeColumn,
         }),
         [columns, cards, activeCard, activeColumn]
     );
 
-    useEffect(() => {
-        console.log("WebSocket connecting...");
-        const token = session?.user?.backendToken;
-        if (!api || !projectId || !token) return;
-
-        const handleBoardUpdate = (updatedProject: IBoardProject) => {
-            // setColumns(updatedProject.columns);
-            // setCards(updatedProject.columns.flatMap((c) => c.cards));
-        };
-
-        websocketManager.connect(token, projectId, handleBoardUpdate);
-
-        return () => {
-            websocketManager.disconnect();
-        };
-    }, [api, session, projectId, setColumns, setCards]);
+    console.log("DND context render");
 
     return (
         <DragAndDropContext value={value}>

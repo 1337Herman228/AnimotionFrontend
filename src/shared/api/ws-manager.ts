@@ -1,25 +1,14 @@
 import { Client, IMessage } from "@stomp/stompjs";
-import { IBoardProject } from "@/types";
-
-type PendingRequest = {
-    resolve: (value: any) => void;
-    reject: (reason?: unknown) => void;
-    timeoutId: NodeJS.Timeout;
-};
+import { IBoardProject, ICardMessage } from "@/types";
+import { queryClient } from "./query-client";
+import { boardQueries } from "@/entities/board";
 
 class WebSocketManager {
     private client: Client | null = null;
-    private pendingRequests = new Map<string, PendingRequest>();
 
-    private readonly REPLY_QUEUE = "/user/queue/replies";
     private readonly GENERAL_TOPIC_PREFIX = "/topic/project/";
 
-    public connect(
-        token: string,
-        projectId: string,
-        // Колбэк для общей рассылки (обновление доски)
-        onGeneralUpdate: (update: IBoardProject) => void
-    ): void {
+    public connect(token: string, projectId: string): void {
         if (this.client && this.client.active) {
             console.warn("WebSocket client is already connected.");
             return;
@@ -33,8 +22,6 @@ class WebSocketManager {
 
         this.client.onConnect = () => {
             console.log("WebSocket client connected.");
-
-            // 1. Подписка на общие обновления доски (рассылка)
             this.client?.subscribe(
                 `${this.GENERAL_TOPIC_PREFIX}${projectId}`,
                 (message: IMessage) => {
@@ -42,97 +29,57 @@ class WebSocketManager {
                         const parsedData: IBoardProject = JSON.parse(
                             message.body
                         );
-                        onGeneralUpdate(parsedData);
+                        queryClient.setQueryData<IBoardProject>(
+                            boardQueries.getIdKey(projectId),
+                            () => parsedData
+                        );
                     } catch (error) {
                         console.error("Failed to parse general update:", error);
                     }
                 }
             );
-
-            // 2. Подписка на персональную очередь для получения ответов (для useMutation)
-            // Мы знаем, что сервер отправляет ответ сюда
-            this.client?.subscribe(this.REPLY_QUEUE, this.handleReply);
         };
 
-        // ... (onStompError и т.д.)
         this.client.onStompError = (frame) => {
             console.error("Broker reported error:", frame.headers["message"]);
             console.error("Additional details:", frame.body);
-            this.disconnectPendingRequests("STOMP Error during connection.");
         };
 
         this.client.activate();
     }
 
-    // Обработчик ответов из персональной очереди
-    private handleReply = (message: IMessage) => {
-        try {
-            console.log("✅ --- PERSONAL REPLY RECEIVED! --- ✅");
-            const response = JSON.parse(message.body);
-            // Имена полей соответствуют вашему WebSocketReply.java
-            const { correlationId, status, payload, error } = response;
-
-            if (!correlationId || !this.pendingRequests.has(correlationId)) {
-                return;
-            }
-
-            const pending = this.pendingRequests.get(correlationId)!;
-            this.pendingRequests.delete(correlationId); // Удаляем, чтобы не вызвать дважды
-            clearTimeout(pending.timeoutId);
-
-            if (status === "SUCCESS") {
-                // Если нужно вернуть что-то конкретное, используйте payload
-                pending.resolve(payload);
-            } else {
-                pending.reject(new Error(error || "Unknown server error"));
-            }
-        } catch (e) {
-            console.error("Failed to process reply message:", e);
-        }
-    };
-
-    // Метод для отправки команд и ожидания ответа
     public publishAndAwaitReply<T>(
         destination: string,
-        body: object,
-        timeout = 3000
+        body: object
     ): Promise<T> {
         return new Promise((resolve, reject) => {
             if (!this.client || !this.client.active) {
                 return reject(new Error("WebSocket is not connected."));
             }
 
-            const correlationId = crypto.randomUUID();
-
-            const timeoutId = setTimeout(() => {
-                this.pendingRequests.delete(correlationId);
-                reject(new Error(`Request timed out after ${timeout}ms`));
-            }, timeout);
-
-            this.pendingRequests.set(correlationId, {
-                resolve,
-                reject,
-                timeoutId,
-            });
-
             this.client.publish({
                 destination,
-                // Добавляем correlationId к исходящему сообщению
-                body: JSON.stringify({ ...body, correlationId }),
+                body: JSON.stringify({
+                    ...body,
+                }),
             });
         });
     }
 
-    private disconnectPendingRequests(reason: string) {
-        this.pendingRequests.forEach((p) => {
-            clearTimeout(p.timeoutId);
-            p.reject(reason);
-        });
-        this.pendingRequests.clear();
+    public addCard(message: ICardMessage) {
+        if (this.client && this.client.active) {
+            this.client.publish({
+                destination: "/app/board/add-card",
+                body: JSON.stringify(message),
+            });
+        } else {
+            console.error(
+                "Cannot send message, WebSocket client is not connected."
+            );
+        }
     }
 
     public disconnect(): void {
-        this.disconnectPendingRequests("Disconnecting WebSocket client.");
         if (this.client) {
             this.client.deactivate();
             this.client = null;

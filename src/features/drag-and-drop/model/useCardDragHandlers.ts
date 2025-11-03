@@ -10,6 +10,7 @@ import { useCallback, useRef } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useMoveCardMutation } from "../api/useMoveCard";
 import { addCardsToColumns } from "../lib/addCardsToColumns";
+import { cardQueries } from "@/entities/card";
 
 export const useCardDragHandlers = ({
     cards,
@@ -42,7 +43,7 @@ export const useCardDragHandlers = ({
             if (!isActiveACard) return;
 
             if (isDraggingOverACard) {
-                console.time("DraggingOverACard");
+                // console.time("DraggingOverACard");
 
                 setTimeout(() => {
                     setCards((prevCards) => {
@@ -79,11 +80,11 @@ export const useCardDragHandlers = ({
                         );
                     });
                 }, 0);
-                console.timeEnd("DraggingOverACard");
+                // console.timeEnd("DraggingOverACard");
             }
 
             if (isDraggingOverAColumn) {
-                console.time("DraggingOverAColumn");
+                // console.time("DraggingOverAColumn");
                 setCards((prevCards) => {
                     const activeCardIndex = prevCards.findIndex(
                         (c) => c.id === active.id
@@ -104,7 +105,7 @@ export const useCardDragHandlers = ({
 
                     return prevCards;
                 });
-                console.timeEnd("DraggingOverAColumn");
+                // console.timeEnd("DraggingOverAColumn");
             }
         },
         [setCards, recentlyDraggedOverId]
@@ -144,6 +145,7 @@ export const useCardDragHandlers = ({
                             ?.cardOrder || [],
                 },
                 cardId: activeCard.id,
+                queryKey: cardQueries.getIdKey(activeCard.projectId),
             });
         }
     };

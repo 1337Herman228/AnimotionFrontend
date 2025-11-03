@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { boardQueries } from "@/entities/board";
 import { useParams } from "next/navigation";
 import ScreenLoading from "@/shared/ui/screen-loading";
+import useWebsocket from "@/features/drag-and-drop/model/useWebsocket";
 
 export const Board = () => {
     const params = useParams();
@@ -20,12 +21,12 @@ export const Board = () => {
         ...boardQueries.byId(projectId),
     });
 
-    console.log("board", board);
+    useWebsocket();
 
     if (isPending) return <ScreenLoading />;
 
     return (
-        <DragAndDropProvider initialColumns={board?.columns}>
+        <DragAndDropProvider key={board?.id} initialColumns={board?.columns}>
             <ColumnList />
             <KanbanDragOverlay />
         </DragAndDropProvider>

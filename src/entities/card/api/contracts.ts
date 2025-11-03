@@ -38,4 +38,5 @@ export const MoveCardDtoSchema = v.object({
         cardOrder: v.array(v.string()),
     }),
     cardId: v.string(),
+    queryKey: v.array(v.string()),
 });

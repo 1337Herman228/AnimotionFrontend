@@ -1,8 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { IBoardProject } from "@/types";
-import { cardService, TMoveCardDtoSchema } from "@/entities/card";
-
-const boardQueryKey = (projectId: string) => ["board", projectId];
+import { cardQueries, cardService, TMoveCardDtoSchema } from "@/entities/card";
 
 export const useMoveCardMutation = () => {
     const queryClient = useQueryClient();
@@ -10,7 +8,7 @@ export const useMoveCardMutation = () => {
     return useMutation({
         mutationFn: (data: TMoveCardDtoSchema) => cardService.moveCard(data),
         onMutate: async (movedCardData) => {
-            const queryKey = boardQueryKey(movedCardData.projectId);
+            const queryKey = cardQueries.getIdKey(movedCardData.projectId);
 
             await queryClient.cancelQueries({ queryKey });
 
@@ -34,16 +32,16 @@ export const useMoveCardMutation = () => {
             console.error("Failed to move card, rolling back...", err);
             if (context?.previousBoardState) {
                 queryClient.setQueryData(
-                    boardQueryKey(context.projectId),
+                    cardQueries.getIdKey(context.projectId),
                     context.previousBoardState
                 );
             }
         },
-        onSettled: (_, __, context) => {
-            queryClient.invalidateQueries({
-                queryKey: boardQueryKey(context.projectId),
-            });
-        },
+        // onSettled: (_, __, context) => {
+        //     queryClient.invalidateQueries({
+        //         queryKey: cardQueries.getIdKey(context.projectId),
+        //     });
+        // },
         meta: {
             errorMessage: "Failed to move card. Please try again later",
         },
