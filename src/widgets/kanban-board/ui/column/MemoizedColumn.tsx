@@ -1,5 +1,4 @@
 import { ColumnTypes } from "@/entities/column";
-import { useDragAndDrop } from "@/features/drag-and-drop";
 import { memo } from "react";
 import type {
     DraggableAttributes,
@@ -28,8 +27,6 @@ export const MemoizedColumn = memo(
         draggableListeners,
         isOverlay,
     }: MemoizedColumnProps) => {
-        const { cards } = useDragAndDrop();
-
         const { setNodeRef, listeners, attributes, style, isDragging } =
             useDndSortable({
                 id: column.id,
@@ -69,12 +66,8 @@ export const MemoizedColumn = memo(
                         {/* <SettingsMenu className="hover:bg-muted-foreground/15 dark:hover:bg-muted-foreground/15 shrink-0" /> */}
                     </BoardColumn.Header>
                     <BoardColumn.Content>
-                        <SortableContext items={cards.map((c) => c.id)}>
-                            <CardList
-                                cards={cards?.filter(
-                                    (c) => c.columnId === column.id
-                                )}
-                            />
+                        <SortableContext items={column.cards.map((c) => c.id)}>
+                            <CardList cards={column.cards} />
                         </SortableContext>
                         <CreateCardButton column={column} />
                     </BoardColumn.Content>

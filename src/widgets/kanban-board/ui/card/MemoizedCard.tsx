@@ -3,7 +3,7 @@ import { GripVertical } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import { Card } from "@/entities/card";
 import { CardTitle } from "@/shared/ui/card";
-import CardSettings from "@/pages/board/ui/Card/card-settings/CardSettings";
+import CardSettings from "@/fsd-pages/board/ui/Card/card-settings/CardSettings";
 import { memo } from "react";
 import { useDndSortable } from "@/shared/lib/useDndSortable";
 

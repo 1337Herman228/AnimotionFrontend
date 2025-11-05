@@ -3,10 +3,10 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { queryClient } from "../api/query-client";
 import { AxiosInterceptorProvider } from "./axios-interceptor-provider";
 import { ThemeProvider } from "./theme-provider";
 import { Toaster } from "../ui/sonner";
+import { queryClient } from "../api/query-client";
 
 export const Providers = ({
     children,

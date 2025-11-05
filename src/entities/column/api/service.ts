@@ -1,5 +1,5 @@
 import { websocketManager } from "@/shared/api/ws-manager";
-import { TBoardProjectSchema } from "@/entities/board/@x/card";
+import { TBoardSchema } from "@/entities/board/@x/card";
 import { TColumnService, TMoveColumnDtoSchema } from "./types";
 import { parse } from "valibot";
 import { MoveColumnDtoSchema } from "./contracts";
@@ -25,7 +25,7 @@ export const columnService: TColumnService = {
 
     async moveColumn(data: TMoveColumnDtoSchema) {
         const moveColumnMessage = parse(MoveColumnDtoSchema, data);
-        return websocketManager.publishAndAwaitReply<TBoardProjectSchema>(
+        return websocketManager.publishAndAwaitReply<TBoardSchema>(
             columnApiEndpoints.moveColumn(),
             moveColumnMessage
         );

@@ -1,1 +1,1 @@
-export type { TBoardProjectSchema } from "../api/types";
+export type { TBoardSchema } from "../api/types";

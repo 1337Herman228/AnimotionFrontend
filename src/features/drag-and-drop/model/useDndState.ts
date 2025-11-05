@@ -1,6 +1,6 @@
 import type { CardTypes } from "@/entities/card";
 import type { ColumnTypes } from "@/entities/column";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { parse } from "valibot";
 import { DndDataSchema } from "./contracts";
 
@@ -14,8 +14,8 @@ export const useDndState = (
 
     const [columns, setColumns] = useState(parsedColumns);
     const [cards, setCards] = useState(parsedCards);
-    const [prevInitialColumns, setPrevInitialColumns] =
-        useState(initialColumns);
+
+    const prevInitialColumns = useRef(initialColumns);
 
     const [activeCard, setActiveCard] = useState<CardTypes.TCardSchema | null>(
         null
@@ -24,8 +24,8 @@ export const useDndState = (
     const [activeColumn, setActiveColumn] =
         useState<ColumnTypes.TColumnWhithoutCardsSchema | null>(null);
 
-    if (initialColumns !== prevInitialColumns) {
-        setPrevInitialColumns(initialColumns);
+    if (initialColumns !== prevInitialColumns.current) {
+        prevInitialColumns.current = initialColumns;
 
         const { columns: parsedColumns, cards: parsedCards } = parse(
             DndDataSchema,

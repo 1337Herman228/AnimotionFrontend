@@ -4,7 +4,7 @@ import Section from "@/shared/ui/section";
 import { BoardSummaryList } from "@/widgets/board-list";
 import { useQuery } from "@tanstack/react-query";
 
-export const BoardListPage = () => {
+const BoardListPage = () => {
     const {
         data: boards,
         isPending,
@@ -24,3 +24,5 @@ export const BoardListPage = () => {
         </Section>
     );
 };
+
+export default BoardListPage;

@@ -2,11 +2,11 @@ import { ICard, IBoardColumn, ICardMessage } from "@/types";
 import { SortableContext, useSortable } from "@dnd-kit/sortable";
 import TaskCard from "../Card/TaskCard";
 import { CSS } from "@dnd-kit/utilities";
-import SettingsMenu from "@/pages/dashboard/ui/SettingsMenu";
 import { Badge } from "@/shared/ui/badge";
 import { GripVertical } from "lucide-react";
 import { CreateCardButton } from "@/features/card/add-card";
 import { Column as BoardColumn } from "@/entities/column";
+import { SettingsMenu } from "@/features/board";
 
 interface ColumnProps {
     column: IBoardColumn;

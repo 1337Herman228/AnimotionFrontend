@@ -15,7 +15,7 @@ import {
 } from "./contracts";
 import publish from "@/shared/api/ws-publish";
 import { websocketManager } from "@/shared/api/ws-manager";
-import { TBoardProjectSchema } from "@/entities/board/@x/card";
+import { TBoardSchema } from "@/entities/board/@x/card";
 
 export const cardService: TCardService = {
     client: null,
@@ -37,7 +37,7 @@ export const cardService: TCardService = {
 
     async moveCard(data: TMoveCardDtoSchema) {
         const moveCardMessage = parse(MoveCardDtoSchema, data);
-        return websocketManager.publishAndAwaitReply<TBoardProjectSchema>(
+        return websocketManager.publishAndAwaitReply<TBoardSchema>(
             cardApiEndpoints.moveCard(),
             moveCardMessage
         );

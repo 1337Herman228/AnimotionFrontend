@@ -1,6 +1,6 @@
 "use client";
 
-import LoginPage from "@/pages/login/ui/LoginPage";
+import LoginPage from "@/fsd-pages/login/ui/LoginPage";
 
 const Page = () => <LoginPage />;
 

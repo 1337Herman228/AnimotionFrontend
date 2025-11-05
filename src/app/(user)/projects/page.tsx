@@ -1,6 +1,6 @@
 "use client";
 
-import { BoardListPage } from "@/pages/boards-list/ui/BoardListPage";
+import BoardListPage from "@/fsd-pages/boards-list/ui/BoardListPage";
 
 const Page = () => <BoardListPage />;
 

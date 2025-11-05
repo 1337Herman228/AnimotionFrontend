@@ -26,7 +26,7 @@ export const Board = () => {
     if (isPending) return <ScreenLoading />;
 
     return (
-        <DragAndDropProvider key={board?.id} initialColumns={board?.columns}>
+        <DragAndDropProvider initialColumns={board?.columns}>
             <ColumnList />
             <KanbanDragOverlay />
         </DragAndDropProvider>
