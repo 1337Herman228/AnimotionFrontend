@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { IBoardProject, IMoveColumnMessage } from "@/types";
+import { IBoard, IMoveColumnMessage } from "@/types";
 import { columnService } from "@/entities/column";
-
-const boardQueryKey = (projectId: string) => ["board", projectId];
+import { boardQueries } from "@/entities/board";
 
 export const useMoveColumn = () => {
     const queryClient = useQueryClient();
@@ -11,14 +10,14 @@ export const useMoveColumn = () => {
         mutationFn: (data: IMoveColumnMessage) =>
             columnService.moveColumn(data),
         onMutate: async (movedColumnData) => {
-            const queryKey = boardQueryKey(movedColumnData.projectId);
+            const queryKey = boardQueries.getIdKey(movedColumnData.projectId);
 
             await queryClient.cancelQueries({ queryKey });
 
             const previousBoardState =
-                queryClient.getQueryData<IBoardProject>(queryKey);
+                queryClient.getQueryData<IBoard>(queryKey);
 
-            queryClient.setQueryData<IBoardProject>(queryKey, (oldData) => {
+            queryClient.setQueryData<IBoard>(queryKey, (oldData) => {
                 if (!oldData) return undefined;
 
                 const updatedData = {
@@ -35,14 +34,14 @@ export const useMoveColumn = () => {
             console.error("Failed to move column, rolling back...", err);
             if (context?.previousBoardState) {
                 queryClient.setQueryData(
-                    boardQueryKey(context.projectId),
+                    boardQueries.getIdKey(context.projectId),
                     context.previousBoardState
                 );
             }
         },
         onSettled: (_, __, context) => {
             queryClient.invalidateQueries({
-                queryKey: boardQueryKey(context.projectId),
+                queryKey: boardQueries.getIdKey(context.projectId),
             });
         },
         meta: {

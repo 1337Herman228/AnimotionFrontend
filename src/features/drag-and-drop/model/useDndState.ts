@@ -36,8 +36,6 @@ export const useDndState = (
         setCards(parsedCards);
     }
 
-    console.log("dnd state render");
-
     return {
         columns,
         cards,

@@ -10,15 +10,10 @@ import useWebsocket from "@/features/drag-and-drop/model/useWebsocket";
 
 export const Board = () => {
     const params = useParams();
-    const projectId = params?.projectId as string;
+    const boardId = params?.boardId as string;
 
-    const {
-        data: board,
-        isPending,
-        isError,
-        error,
-    } = useQuery({
-        ...boardQueries.byId(projectId),
+    const { data: board, isPending } = useQuery({
+        ...boardQueries.byId(boardId),
     });
 
     useWebsocket();

@@ -57,7 +57,7 @@ export interface IBoardColumn {
     title: string;
 }
 
-export interface IBoardProject {
+export interface IBoard {
     id: string;
     name: string;
     ownerId: string;

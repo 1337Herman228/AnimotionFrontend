@@ -1,6 +1,6 @@
 import * as v from "valibot";
 import { CardMemberSchema, CardPrioritySchema } from "../model/contracts";
-import { ColumnsSchema } from "@/entities/column/@x/card";
+import { ColumnsSchema } from "@/entities/column/@x";
 
 export const AddCardDtoSchema = v.object({
     title: v.string(),
@@ -9,12 +9,6 @@ export const AddCardDtoSchema = v.object({
     projectId: v.string(),
     appointedMembers: v.nullable(v.array(CardMemberSchema)),
     priority: v.nullable(CardPrioritySchema),
-});
-
-export const DeleteCardDtoSchema = v.object({
-    projectId: v.string(),
-    deletedCardId: v.string(),
-    columnId: v.string(),
 });
 
 export const CardIdDtoSchema = v.object({
@@ -28,7 +22,7 @@ export const EditCardDtoSchema = v.intersect([
 
 export const MoveCardDtoSchema = v.object({
     updatedColumns: ColumnsSchema,
-    projectId: v.string(),
+    boardId: v.string(),
     sourceColumn: v.object({
         id: v.string(),
         cardOrder: v.array(v.string()),

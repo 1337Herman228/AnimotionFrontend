@@ -30,10 +30,10 @@ export const boardService = {
     // },
 
     // async editBoard(data: EditBoardDto) {
-    //     const { boardId, ...editBoardDto } = parse(EditBoardDtoSchema, data);
+    //     const { projectId, ...editBoardDto } = parse(EditBoardDtoSchema, data);
 
     //     const response = await axiosInstance.patch(
-    //         boardApiEndpoints.byId(boardId),
+    //         boardApiEndpoints.byId(projectId),
     //         editBoardDto
     //     );
 
@@ -43,8 +43,8 @@ export const boardService = {
     // },
 
     // async deleteBoard(data: BoardIdDto) {
-    //     const { boardId } = parse(BoardIdDtoSchema, data);
+    //     const { projectId } = parse(BoardIdDtoSchema, data);
 
-    //     await axiosInstance.delete(boardApiEndpoints.byId(boardId));
+    //     await axiosInstance.delete(boardApiEndpoints.byId(projectId));
     // },
 };

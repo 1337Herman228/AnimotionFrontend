@@ -1,7 +1,7 @@
 class BoardApiEndpoints {
-    private readonly BASE_URL = "/projects";
+    private readonly BASE_URL = "/boards";
 
-    byId = (boardId: string) => `${this.BASE_URL}/${boardId}`;
+    byId = (projectId: string) => `${this.BASE_URL}/${projectId}`;
 
     get root() {
         return this.BASE_URL;

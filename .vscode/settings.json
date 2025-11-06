@@ -4,6 +4,10 @@
     "markfiles.colorMarkedFile": "both",
     "markfiles.autoloadFromScope": true,
     "workbench.colorCustomizations": {
-        "markfiles.markedFileColor": "#7ad108"
-    }
+        "markfiles.markedFileColor": "#7ad108",
+        "sash.hoverBorder": "#cc70f0",
+        "tab.activeBorder": "#cc70f0",
+        "editorGroup.border": "#cc70f0"
+    },
+    "peacock.color": "#bb42eb"
 }

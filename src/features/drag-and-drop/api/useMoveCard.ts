@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { IBoardProject } from "@/types";
+import { IBoard } from "@/types";
 import { cardQueries, cardService, TMoveCardDtoSchema } from "@/entities/card";
 
 export const useMoveCardMutation = () => {
@@ -8,14 +8,14 @@ export const useMoveCardMutation = () => {
     return useMutation({
         mutationFn: (data: TMoveCardDtoSchema) => cardService.moveCard(data),
         onMutate: async (movedCardData) => {
-            const queryKey = cardQueries.getIdKey(movedCardData.projectId);
+            const queryKey = cardQueries.getIdKey(movedCardData.boardId);
 
             await queryClient.cancelQueries({ queryKey });
 
             const previousBoardState =
-                queryClient.getQueryData<IBoardProject>(queryKey);
+                queryClient.getQueryData<IBoard>(queryKey);
 
-            queryClient.setQueryData<IBoardProject>(queryKey, (oldData) => {
+            queryClient.setQueryData<IBoard>(queryKey, (oldData) => {
                 if (!oldData) return undefined;
 
                 const updatedData = {
@@ -26,13 +26,13 @@ export const useMoveCardMutation = () => {
                 return updatedData;
             });
 
-            return { previousBoardState, projectId: movedCardData.projectId };
+            return { previousBoardState, boardId: movedCardData.boardId };
         },
         onError: (err, _, context) => {
             console.error("Failed to move card, rolling back...", err);
             if (context?.previousBoardState) {
                 queryClient.setQueryData(
-                    cardQueries.getIdKey(context.projectId),
+                    cardQueries.getIdKey(context.boardId),
                     context.previousBoardState
                 );
             }

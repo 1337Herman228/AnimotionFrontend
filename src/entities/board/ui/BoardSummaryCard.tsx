@@ -44,7 +44,7 @@ const BoardSummaryCardProvider = ({
 
     return (
         <BoardSummaryCardContext value={value}>
-            <Link href={`/projects/${board.id}`}>
+            <Link href={`/boards/${board.id}`}>
                 <Card
                     {...props}
                     className={cn(

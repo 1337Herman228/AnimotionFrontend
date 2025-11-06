@@ -1,13 +1,11 @@
-// import { useDragAndDrop } from "@/features/drag-and-drop";
 import { SortableContext } from "@dnd-kit/sortable";
 import { useMemo } from "react";
 import { MemoizedColumn } from "./MemoizedColumn";
-import { useDndStore } from "@/features/drag-and-drop";
+import { useDragAndDrop } from "@/features/drag-and-drop/model/context";
 
 export const ColumnList = () => {
-    const { getColumnsWithCards } = useDndStore();
+    const { columns } = useDragAndDrop();
 
-    const columns = getColumnsWithCards();
     const columnsIds = useMemo(() => columns?.map((c) => c.id), [columns]);
 
     return (

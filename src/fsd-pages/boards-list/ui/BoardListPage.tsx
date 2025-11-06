@@ -19,7 +19,7 @@ const BoardListPage = () => {
 
     return (
         <Section>
-            <h1 className="text-4xl font-semibold mb-8">My Projects</h1>
+            <h1 className="text-4xl font-semibold mb-8">My Boards</h1>
             <BoardSummaryList boards={boards} />
         </Section>
     );

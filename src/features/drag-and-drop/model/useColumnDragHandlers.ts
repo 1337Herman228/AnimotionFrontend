@@ -3,11 +3,12 @@ import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useMoveColumn } from "../api/useMoveColumn";
 import { TColumnDragHandlers } from "./types";
-import { useDndStore } from "./dnd-store";
 
-export const useColumnDragHandlers = () => {
-    const { columns, setColumns, setActiveColumn } = useDndStore();
-
+export const useColumnDragHandlers = ({
+    columns,
+    setActiveColumn,
+    setColumns,
+}: TColumnDragHandlers) => {
     const { mutate: moveColumn } = useMoveColumn();
 
     const onDragStart = ({ active }: DragStartEvent) => {

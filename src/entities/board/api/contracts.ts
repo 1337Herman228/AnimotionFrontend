@@ -1,5 +1,5 @@
-import { CardPrioritySchema } from "@/entities/card/@x/board";
-import { ColumnSchema } from "@/entities/column/@x/board";
+import { CardPrioritySchema } from "@/entities/card/@x";
+import { ColumnSchema } from "@/entities/column/@x";
 import { MemberSchema } from "@/entities/user/@x/board";
 import * as v from "valibot";
 

@@ -1,7 +1,6 @@
-import { TAddCardDtoSchema } from "@/entities/card";
+import { cardService, TAddCardDtoSchema } from "@/entities/card";
 import { TColumnSchema } from "@/entities/column";
 import { websocketManager } from "@/shared/api/ws-manager";
-import { useBoardStore } from "@/shared/stores/boardStore";
 import { Button } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -12,10 +11,10 @@ interface CreateCardBtnProps {
 
 export const CreateCardButton = ({ column }: CreateCardBtnProps) => {
     const params = useParams();
-    const projectId = params?.projectId as string;
+    const boardId = params?.boardId as string;
 
     const template: TAddCardDtoSchema = {
-        projectId: projectId || "",
+        projectId: boardId || "",
         title: "Card" + Math.random().toString(36).substring(2),
         columnId: column.id,
         description: "Description...",
@@ -25,7 +24,7 @@ export const CreateCardButton = ({ column }: CreateCardBtnProps) => {
 
     return (
         <Button
-            onClick={() => websocketManager.addCard(template)}
+            onClick={() => cardService.addCard(template)}
             variant={"ghost"}
             className="cursor-pointer w-full hover:bg-accent-foreground/10 dark:hover:bg-accent-foreground/10 transition-all duration-300 justify-start"
         >

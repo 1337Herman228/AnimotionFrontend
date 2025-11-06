@@ -27,7 +27,7 @@ export const SettingsMenu = ({
             <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem className="text-red-500">
-                    Delete project
+                    Delete board
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

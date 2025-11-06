@@ -27,14 +27,14 @@ export const MemoizedColumn = memo(
         draggableListeners,
         isOverlay,
     }: MemoizedColumnProps) => {
+        if (isOverlay) column as ColumnTypes.TColumnSchema;
+
         const { setNodeRef, listeners, attributes, style, isDragging } =
             useDndSortable({
                 id: column.id,
                 data: { type: "column", column },
                 attributes: { roleDescription: `Column: ${column.title}` },
             });
-
-        // console.log("column", column.title, "| cards", column.cards);
 
         return (
             <div

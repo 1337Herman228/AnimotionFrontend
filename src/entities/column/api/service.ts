@@ -1,5 +1,5 @@
 import { websocketManager } from "@/shared/api/ws-manager";
-import { TBoardSchema } from "@/entities/board/@x/card";
+import { TBoardSchema } from "@/entities/board/@x";
 import { TColumnService, TMoveColumnDtoSchema } from "./types";
 import { parse } from "valibot";
 import { MoveColumnDtoSchema } from "./contracts";

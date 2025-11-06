@@ -1,5 +1,5 @@
 import { Client, IMessage } from "@stomp/stompjs";
-import { IBoardProject, ICardMessage } from "@/types";
+import { IBoard, ICardMessage } from "@/types";
 import { queryClient } from "./query-client";
 import { boardQueries } from "@/entities/board";
 
@@ -26,10 +26,8 @@ class WebSocketManager {
                 `${this.GENERAL_TOPIC_PREFIX}${projectId}`,
                 (message: IMessage) => {
                     try {
-                        const parsedData: IBoardProject = JSON.parse(
-                            message.body
-                        );
-                        queryClient.setQueryData<IBoardProject>(
+                        const parsedData: IBoard = JSON.parse(message.body);
+                        queryClient.setQueryData<IBoard>(
                             boardQueries.getIdKey(projectId),
                             () => parsedData
                         );
@@ -66,10 +64,10 @@ class WebSocketManager {
         });
     }
 
-    public addCard(message: ICardMessage) {
+    public editCard(message: ICardMessage) {
         if (this.client && this.client.active) {
             this.client.publish({
-                destination: "/app/board/add-card",
+                destination: "/app/board/edit-card",
                 body: JSON.stringify(message),
             });
         } else {

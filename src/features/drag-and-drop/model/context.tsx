@@ -1,6 +1,6 @@
 import type { DragAndDropContext, DragAndDropProviderProps } from "./types";
 
-import { createContext } from "react";
+import { createContext, use, useMemo } from "react";
 import {
     DndContext as DndKitContext,
     MouseSensor,
@@ -11,47 +11,39 @@ import {
 
 import { useCardDragHandlers } from "./useCardDragHandlers";
 import { useColumnDragHandlers } from "./useColumnDragHandlers";
-import { useDndStore } from "./dnd-store";
+import { useDndState } from "./useDndState";
+import { addCardsToColumns } from "../lib/addCardsToColumns";
+import { ColumnTypes } from "@/entities/column";
 
-// const DragAndDropContext = createContext<DragAndDropContext | null>(null);
+const DragAndDropContext = createContext<DragAndDropContext | null>(null);
 
 export const DragAndDropProvider = ({
     children,
     initialColumns,
 }: DragAndDropProviderProps) => {
-    const { parseInitialColumnsToState, prevInitialColumns } = useDndStore();
+    const {
+        columns,
+        cards,
+        activeColumn,
+        activeCard,
+        setActiveColumn,
+        setActiveCard,
+        setColumns,
+        setCards,
+    } = useDndState(initialColumns);
 
-    console.log("rerender DragAndDropProvider");
+    const cardDragHandlers = useCardDragHandlers({
+        cards,
+        columns,
+        setActiveCard,
+        setCards,
+    });
 
-    if (initialColumns !== prevInitialColumns) {
-        parseInitialColumnsToState(initialColumns ?? []);
-        console.log("parseInitialColumnsToState");
-    }
-    // const {
-    //     columns,
-    //     cards,
-    //     activeColumn,
-    //     activeCard,
-    //     setActiveColumn,
-    //     setActiveCard,
-    //     setColumns,
-    //     setCards,
-    // } = useDndState(initialColumns);
-
-    const cardDragHandlers = useCardDragHandlers();
-    //     {
-    //     cards,
-    //     columns,
-    //     setActiveCard,
-    //     setCards,
-    // }
-
-    const columnDragHandlers = useColumnDragHandlers();
-    //     {
-    //     columns,
-    //     setActiveColumn,
-    //     setColumns,
-    // }
+    const columnDragHandlers = useColumnDragHandlers({
+        columns,
+        setActiveColumn,
+        setColumns,
+    });
 
     const sensors = useSensors(
         useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
@@ -63,47 +55,53 @@ export const DragAndDropProvider = ({
 
     // const announcements = useGetAccessibilityAnnouncements({ columns, cards });
 
-    // const value = useMemo(
-    //     () => ({
-    //         columns: addCardsToColumns(columns, cards),
-    //         cards,
-    //         activeCard,
-    //         activeColumn: activeColumn,
-    //     }),
-    //     [columns, cards, activeCard, activeColumn]
-    // );
-
-    console.log("DND context render");
+    const value = useMemo(
+        () => ({
+            columns: addCardsToColumns(
+                columns,
+                cards
+            ) as ColumnTypes.TColumnsSchema,
+            cards,
+            activeCard,
+            activeColumn:
+                activeColumn &&
+                (addCardsToColumns(
+                    activeColumn,
+                    cards
+                ) as ColumnTypes.TColumnSchema),
+        }),
+        [columns, cards, activeCard, activeColumn]
+    );
 
     return (
-        // <DragAndDropContext value={value}>
-        <DndKitContext
-            sensors={sensors}
-            // accessibility={{ announcements }}
-            onDragStart={(e) => {
-                cardDragHandlers.onDragStart(e);
-                columnDragHandlers.onDragStart(e);
-            }}
-            onDragOver={cardDragHandlers.onDragOver}
-            onDragEnd={(e) => {
-                cardDragHandlers.onDragEnd(e);
-                columnDragHandlers.onDragEnd(e);
-            }}
-        >
-            {children}
-        </DndKitContext>
-        // </DragAndDropContext>
+        <DragAndDropContext value={value}>
+            <DndKitContext
+                sensors={sensors}
+                // accessibility={{ announcements }}
+                onDragStart={(e) => {
+                    cardDragHandlers.onDragStart(e);
+                    columnDragHandlers.onDragStart(e);
+                }}
+                onDragOver={cardDragHandlers.onDragOver}
+                onDragEnd={(e) => {
+                    cardDragHandlers.onDragEnd(e);
+                    columnDragHandlers.onDragEnd(e);
+                }}
+            >
+                {children}
+            </DndKitContext>
+        </DragAndDropContext>
     );
 };
 
-// export const useDragAndDrop = () => {
-//     const context = use(DragAndDropContext);
+export const useDragAndDrop = () => {
+    const context = use(DragAndDropContext);
 
-//     if (!context) {
-//         throw new Error(
-//             "useDragAndDrop must be used within a DragAndDropProvider"
-//         );
-//     }
+    if (!context) {
+        throw new Error(
+            "useDragAndDrop must be used within a DragAndDropProvider"
+        );
+    }
 
-//     return context;
-// };
+    return context;
+};

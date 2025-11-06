@@ -64,7 +64,7 @@ export function NavigationMenuDemo() {
                         </NavigationMenuContent>
                     </NavigationMenuItem>
 
-                    <NavLink href="/projects">Projects</NavLink>
+                    <NavLink href="/boards">Boards</NavLink>
                 </NavigationMenuList>
             </NavigationMenu>
             <NavigationMenu viewport={true} className="justify-end">

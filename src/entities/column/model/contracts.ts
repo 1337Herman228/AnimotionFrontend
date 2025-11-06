@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { CardSchema } from "@/entities/card/@x/column";
+import { CardSchema } from "@/entities/card/@x";
 
 export const ColumnSchema = v.object({
     cardOrder: v.array(v.string()),

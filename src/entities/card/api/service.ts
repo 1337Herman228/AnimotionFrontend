@@ -1,7 +1,6 @@
 import {
     TAddCardDtoSchema,
     TCardService,
-    TDeleteCardDtoSchema,
     TEditCardDtoSchema,
     TMoveCardDtoSchema,
 } from "./types";
@@ -9,37 +8,31 @@ import { cardApiEndpoints } from "./endpoints";
 import { parse } from "valibot";
 import {
     AddCardDtoSchema,
-    DeleteCardDtoSchema,
     EditCardDtoSchema,
     MoveCardDtoSchema,
 } from "./contracts";
 import publish from "@/shared/api/ws-publish";
-import { websocketManager } from "@/shared/api/ws-manager";
-import { TBoardSchema } from "@/entities/board/@x/card";
+import { api } from "@/shared/api/axiosInstance";
 
 export const cardService: TCardService = {
     client: null,
 
-    addCard(data: TAddCardDtoSchema) {
-        const addCardMessage = parse(AddCardDtoSchema, data);
-        publish(this.client, cardApiEndpoints.addCard(), addCardMessage);
+    moveCard(data: TMoveCardDtoSchema) {
+        const moveCardMessage = parse(MoveCardDtoSchema, data);
+        return api.put(cardApiEndpoints.moveCard(), moveCardMessage);
     },
 
-    deleteCard(data: TDeleteCardDtoSchema) {
-        const deleteCardMessage = parse(DeleteCardDtoSchema, data);
-        publish(this.client, cardApiEndpoints.deleteCard(), deleteCardMessage);
+    addCard(data: TAddCardDtoSchema) {
+        const addCardMessage = parse(AddCardDtoSchema, data);
+        return api.post(cardApiEndpoints.addCard(), addCardMessage);
+    },
+
+    deleteCard(id: string) {
+        return api.delete(cardApiEndpoints.deleteCard(id));
     },
 
     editCard(data: TEditCardDtoSchema) {
         const editCardMessage = parse(EditCardDtoSchema, data);
         publish(this.client, cardApiEndpoints.editCard(), editCardMessage);
-    },
-
-    async moveCard(data: TMoveCardDtoSchema) {
-        const moveCardMessage = parse(MoveCardDtoSchema, data);
-        return websocketManager.publishAndAwaitReply<TBoardSchema>(
-            cardApiEndpoints.moveCard(),
-            moveCardMessage
-        );
     },
 };

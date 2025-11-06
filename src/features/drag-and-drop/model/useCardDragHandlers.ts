@@ -8,12 +8,16 @@ import { useCallback, useRef } from "react";
 import { arrayMove } from "@dnd-kit/sortable";
 import { useMoveCardMutation } from "../api/useMoveCard";
 import { cardQueries } from "@/entities/card";
-import { useDndStore } from "./dnd-store";
+import { TCardDragHandlers } from "./types";
+import { addCardsToColumns } from "../lib/addCardsToColumns";
+import { ColumnTypes } from "@/entities/column";
 
-export const useCardDragHandlers = () => {
-    const { cards, setCards, setActiveCard, getColumnsWithCards } =
-        useDndStore();
-
+export const useCardDragHandlers = ({
+    cards,
+    columns,
+    setCards,
+    setActiveCard,
+}: TCardDragHandlers) => {
     const { mutate: moveCard } = useMoveCardMutation();
 
     const recentlyDraggedOverId = useRef<UniqueIdentifier | null>(null);
@@ -41,60 +45,70 @@ export const useCardDragHandlers = () => {
             if (isDraggingOverACard) {
                 // console.time("DraggingOverACard");
 
-                // setTimeout(() => {
-                const activeCardIndex = cards.findIndex(
-                    (c) => c.id === active.id
-                );
-                const overCardIndex = cards.findIndex((c) => c.id === over.id);
+                setTimeout(() => {
+                    setCards((prevCards) => {
+                        const activeCardIndex = prevCards.findIndex(
+                            (c) => c.id === active.id
+                        );
+                        const overCardIndex = prevCards.findIndex(
+                            (c) => c.id === over.id
+                        );
 
-                const activeCard = cards[activeCardIndex];
-                const overCard = cards[overCardIndex];
+                        const activeCard = prevCards[activeCardIndex];
+                        const overCard = prevCards[overCardIndex];
 
-                recentlyDraggedOverId.current = over.id;
+                        recentlyDraggedOverId.current = over.id;
 
-                if (
-                    activeCard &&
-                    overCard &&
-                    activeCard.columnId !== overCard.columnId
-                ) {
-                    activeCard.columnId = overCard.columnId;
+                        if (
+                            activeCard &&
+                            overCard &&
+                            activeCard.columnId !== overCard.columnId
+                        ) {
+                            activeCard.columnId = overCard.columnId;
 
-                    setCards(
-                        arrayMove(
-                            cards,
+                            return arrayMove(
+                                prevCards,
+                                activeCardIndex,
+                                Math.max(0, overCardIndex - 1)
+                            );
+                        }
+
+                        return arrayMove(
+                            prevCards,
                             activeCardIndex,
-                            Math.max(0, overCardIndex - 1)
-                        )
-                    );
-                }
-
-                setCards(arrayMove(cards, activeCardIndex, overCardIndex));
-                // }, 0);
+                            overCardIndex
+                        );
+                    });
+                }, 0);
                 // console.timeEnd("DraggingOverACard");
             }
 
             if (isDraggingOverAColumn) {
                 // console.time("DraggingOverAColumn");
-
-                const activeCardIndex = cards.findIndex(
-                    (c) => c.id === active.id
-                );
-                const activeCard = cards[activeCardIndex];
-
-                recentlyDraggedOverId.current = over.id;
-
-                if (activeCard) {
-                    activeCard.columnId = over.id as string;
-
-                    setCards(
-                        arrayMove(cards, activeCardIndex, activeCardIndex)
+                setCards((prevCards) => {
+                    const activeCardIndex = prevCards.findIndex(
+                        (c) => c.id === active.id
                     );
-                }
+                    const activeCard = prevCards[activeCardIndex];
 
+                    recentlyDraggedOverId.current = over.id;
+
+                    if (activeCard) {
+                        activeCard.columnId = over.id as string;
+
+                        return arrayMove(
+                            prevCards,
+                            activeCardIndex,
+                            activeCardIndex
+                        );
+                    }
+
+                    return prevCards;
+                });
                 // console.timeEnd("DraggingOverAColumn");
             }
         },
-        [setCards, cards, recentlyDraggedOverId]
+        [setCards, recentlyDraggedOverId]
     );
 
     const onDragEnd = ({ active }: DragEndEvent) => {
@@ -112,11 +126,14 @@ export const useCardDragHandlers = () => {
         const activeCard = cards.find((c) => c.id === active.id);
 
         if (activeCard) {
-            const updatedColumns = getColumnsWithCards();
+            const updatedColumns = addCardsToColumns(
+                columns,
+                cards
+            ) as ColumnTypes.TColumnsSchema;
 
             moveCard({
                 updatedColumns,
-                projectId: activeCard.projectId,
+                boardId: activeCard.projectId,
                 sourceColumn: {
                     id: sourceColumnId.current,
                     cardOrder:
