@@ -3,9 +3,10 @@ import { GripVertical } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
 import { Card } from "@/entities/card";
 import { CardTitle } from "@/shared/ui/card";
-import CardSettings from "@/fsd-pages/board/ui/Card/card-settings/CardSettings";
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useDndSortable } from "@/shared/lib/useDndSortable";
+import { DeleteCardMenuItem } from "@/features/card/delete-card";
+import { EditCardDialog, EditCardMenuItem } from "@/features/card/edit-card";
 
 interface TaskCardProps {
     card: ICard;
@@ -13,6 +14,8 @@ interface TaskCardProps {
 }
 
 export const MemoizedCard = memo(({ card, isOverlay }: TaskCardProps) => {
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+
     const { setNodeRef, listeners, attributes, style, isDragging } =
         useDndSortable({
             id: card.id,
@@ -37,7 +40,19 @@ export const MemoizedCard = memo(({ card, isOverlay }: TaskCardProps) => {
                             {card.title}
                         </CardTitle>
                     </div>
-                    <CardSettings card={card} />
+                    <>
+                        <Card.Settings>
+                            <EditCardMenuItem
+                                onSelect={() => setIsEditDialogOpen(true)}
+                            />
+                            <DeleteCardMenuItem card={card} />
+                        </Card.Settings>
+                        <EditCardDialog
+                            card={card}
+                            open={isEditDialogOpen}
+                            onOpenChange={setIsEditDialogOpen}
+                        />
+                    </>
                 </Card.Header>
                 <Card.Description />
                 <Card.FooterContainer>

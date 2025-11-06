@@ -33,6 +33,6 @@ export const cardService: TCardService = {
 
     editCard(data: TEditCardDtoSchema) {
         const editCardMessage = parse(EditCardDtoSchema, data);
-        publish(this.client, cardApiEndpoints.editCard(), editCardMessage);
+        return api.put(cardApiEndpoints.editCard(), editCardMessage);
     },
 };

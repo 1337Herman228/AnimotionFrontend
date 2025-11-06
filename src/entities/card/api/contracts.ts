@@ -12,7 +12,7 @@ export const AddCardDtoSchema = v.object({
 });
 
 export const CardIdDtoSchema = v.object({
-    cardId: v.string(),
+    id: v.string(),
 });
 
 export const EditCardDtoSchema = v.intersect([

@@ -7,6 +7,7 @@ import { boardQueries } from "@/entities/board";
 import { useParams } from "next/navigation";
 import ScreenLoading from "@/shared/ui/screen-loading";
 import useWebsocket from "@/features/drag-and-drop/model/useWebsocket";
+import { TestDialog } from "./test";
 
 export const Board = () => {
     const params = useParams();
@@ -24,6 +25,7 @@ export const Board = () => {
         <DragAndDropProvider initialColumns={board?.columns}>
             <ColumnList />
             <KanbanDragOverlay />
+            <TestDialog />
         </DragAndDropProvider>
     );
 };

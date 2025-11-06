@@ -7,12 +7,18 @@ import {
 import { cn } from "@/shared/lib/cn";
 import { TCardSchema } from "../model/types";
 import { ComponentProps, createContext, use, useMemo } from "react";
-import { UserRoundX } from "lucide-react";
+import { MoreHorizontalIcon, UserRoundX } from "lucide-react";
 import { TMemberShema } from "@/entities/user/@x/card";
 import UserAvatar from "@/shared/ui/user-avatar";
 import { readableColor } from "polished";
 import PriorityBadge from "@/shared/ui/priority-badge";
 import { timeAgo } from "@/shared/lib/dayjs";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuTrigger,
+} from "@/shared/ui/dropdown-menu";
+import { Button } from "@/shared/ui/button";
 
 type CardContext = {
     card: TCardSchema;
@@ -66,7 +72,10 @@ const TaskCardProvider = ({
 const TaskCardHeader = ({ className, children }: ComponentProps<"div">) => {
     return (
         <CardHeader
-            className={cn("grid grid-cols-[auto_36px] gap-0", className)}
+            className={cn(
+                "grid grid-cols-[auto_36px] gap-x-2 gap-y-0",
+                className
+            )}
         >
             {children}
         </CardHeader>
@@ -195,10 +204,31 @@ const TaskCardFooter = () => {
     );
 };
 
+const TaskCardSettings = ({ children, className }: ComponentProps<"div">) => {
+    return (
+        <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+                <Button
+                    className={"cursor-pointer"}
+                    variant="ghost"
+                    size="icon"
+                    onMouseDown={(e) => e.stopPropagation()}
+                >
+                    <MoreHorizontalIcon className="h-4 w-4" />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className={cn(className)} align="end">
+                {children}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    );
+};
+
 export const Card = Object.assign(TaskCardProvider, {
     Header: TaskCardHeader,
     Description: TaskCardDescription,
     Members: TaskCardMembers,
     FooterContainer: TaskCardFooterContainer,
     Footer: TaskCardFooter,
+    Settings: TaskCardSettings,
 });

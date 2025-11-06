@@ -9,11 +9,13 @@ interface DeleteCardMenuItemProps {
 export const DeleteCardMenuItem = ({ card }: DeleteCardMenuItemProps) => {
     return (
         <DropdownMenuItem
-            onClick={() => cardService.deleteCard(card.id)}
-            className="cursor-pointer"
+            onSelect={() => cardService.deleteCard(card.id)}
+            variant="destructive"
         >
-            <Delete className="text-red-500 shrink-0" />
-            <span className="text-red-500">Delete card</span>
+            <div className="flex items-center gap-2 w-full grow-1 font-normal cursor-pointer text-red-500">
+                <Delete className="text-red-500 shrink-0 w-4 h-4" />
+                Delete Card
+            </div>
         </DropdownMenuItem>
     );
 };
