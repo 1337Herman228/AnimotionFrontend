@@ -14,6 +14,6 @@ export type TCardService = {
     client: Client | null;
     addCard: (arg: TAddCardDtoSchema) => void;
     deleteCard: (id: string) => void;
-    editCard: (arg: TEditCardDtoSchema) => void;
+    editCard: (arg: TEditCardDtoSchema) => Promise<unknown>;
     moveCard: (arg: TMoveCardDtoSchema) => Promise<unknown>;
 };

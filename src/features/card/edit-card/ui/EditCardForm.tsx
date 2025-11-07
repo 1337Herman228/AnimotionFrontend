@@ -19,10 +19,11 @@ import { boardQueries, BoardTypes } from "@/entities/board";
 import { queryClient } from "@/shared/api/query-client";
 import PrioritySelect from "./PrioritySelect";
 import AssigneeSelect from "./AssigneeSelect";
-import { cardService, CardTypes } from "@/entities/card";
+import { CardTypes } from "@/entities/card";
 import { useMemo } from "react";
 import { TEditCardFormSchema } from "../model/types";
 import { EditCardFormSchema } from "../model/contracts";
+import { useEditCardMutation } from "../api/useEditCard";
 
 interface EditCardFormProps {
     card: CardTypes.TCardSchema;
@@ -30,6 +31,8 @@ interface EditCardFormProps {
 }
 
 const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
+    const { mutate: editCard } = useEditCardMutation();
+
     const board = useMemo(
         () =>
             queryClient.getQueryData<BoardTypes.TBoardSchema>(
@@ -60,7 +63,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
             projectId: card.projectId as string,
             appointedMembers: values.assignee,
         };
-        cardService.editCard(message);
+        editCard(message);
         handleDialogClose();
     };
 

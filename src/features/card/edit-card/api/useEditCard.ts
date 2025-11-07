@@ -1,14 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { cardQueries, cardService, TMoveCardDtoSchema } from "@/entities/card";
+import { CardApiTypes, cardQueries, cardService } from "@/entities/card";
 import { BoardTypes } from "@/entities/board";
+import { updateCardInColumns } from "../lib/updateCardInColumns";
 
-export const useMoveCardMutation = () => {
+export const useEditCardMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: TMoveCardDtoSchema) => cardService.moveCard(data),
-        onMutate: async (movedCardData) => {
-            const queryKey = cardQueries.getIdKey(movedCardData.boardId);
+        mutationFn: (data: CardApiTypes.TEditCardDtoSchema) =>
+            cardService.editCard(data),
+        onMutate: async (editCardData) => {
+            const queryKey = cardQueries.getIdKey(
+                editCardData?.projectId as string
+            );
 
             await queryClient.cancelQueries({ queryKey });
 
@@ -22,26 +26,27 @@ export const useMoveCardMutation = () => {
 
                     const updatedData = {
                         ...oldData,
-                        columns: movedCardData.updatedColumns,
+                        columns: updateCardInColumns(oldData, editCardData),
                     };
 
                     return updatedData;
                 }
             );
 
-            return { previousBoardState, boardId: movedCardData.boardId };
+            return { previousBoardState, boardId: editCardData.projectId };
         },
         onError: (err, _, context) => {
-            console.error("Failed to move card, rolling back...", err);
+            console.error("Failed to edit card, rolling back...", err);
             if (context?.previousBoardState) {
                 queryClient.setQueryData(
-                    cardQueries.getIdKey(context.boardId),
+                    cardQueries.getIdKey(context.boardId as string),
                     context.previousBoardState
                 );
             }
         },
         meta: {
-            errorMessage: "Failed to move card. Please try again later",
+            successMessage: "Card edited successfully",
+            errorMessage: "Failed to edit card. Please try again later",
         },
     });
 };
