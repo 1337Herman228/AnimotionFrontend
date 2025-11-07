@@ -30,5 +30,4 @@ const ProjectProperty = ({ title, propertyValue }: ProjectPropertyProps) => {
         </div>
     );
 };
-
 export default ProjectProperty;
