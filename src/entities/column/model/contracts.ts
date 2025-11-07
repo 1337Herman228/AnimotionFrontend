@@ -6,10 +6,12 @@ export const ColumnSchema = v.object({
     cards: v.array(CardSchema),
     id: v.string(),
     title: v.string(),
+    projectId: v.string(),
 });
 export const ColumnsSchema = v.array(ColumnSchema);
 
 export const ColumnWhithoutCardsSchema = v.object({
+    projectId: v.string(),
     cardOrder: v.array(v.string()),
     id: v.string(),
     title: v.string(),

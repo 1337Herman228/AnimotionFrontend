@@ -1,5 +1,5 @@
 class ColumnApiEndpoints {
-    private readonly BASE_URL = "/app/board";
+    private readonly BASE_URL = "/boards";
 
     addColumn = () => `${this.BASE_URL}/add-column`;
     deleteColumn = () => `${this.BASE_URL}/delete-column`;

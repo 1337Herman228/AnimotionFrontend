@@ -41,11 +41,6 @@ export const useMoveColumn = () => {
                 );
             }
         },
-        onSettled: (_, __, context) => {
-            queryClient.invalidateQueries({
-                queryKey: boardQueries.getIdKey(context.projectId),
-            });
-        },
         meta: {
             errorMessage: "Failed to move column. Please try again later",
         },
