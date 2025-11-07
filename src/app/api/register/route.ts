@@ -1,4 +1,4 @@
-import { api } from "@/shared/axios";
+import { api } from "@/shared/api/axiosInstance";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {

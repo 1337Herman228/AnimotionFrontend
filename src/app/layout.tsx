@@ -1,34 +1,18 @@
-"use client";
-
-import { SessionProvider } from "next-auth/react";
+import { getServerSession } from "next-auth";
+import { Providers } from "@/shared/providers";
+import { authOptions } from "./api/auth/[...nextauth]/options";
 import "./global.css";
-import { ThemeProvider } from "@/providers/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import { StoreProvider } from "@/providers/mobx/StoreProvider";
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const session = await getServerSession(authOptions);
     return (
         <html lang="en" suppressHydrationWarning>
             <body>
-                <SessionProvider
-                    refetchOnWindowFocus={false}
-                    refetchInterval={60 * 60} // update every 60 minutes
-                    refetchWhenOffline={false}
-                >
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        <StoreProvider>{children}</StoreProvider>
-                        <Toaster />
-                    </ThemeProvider>
-                </SessionProvider>
+                <Providers session={session}>{children}</Providers>
             </body>
         </html>
     );
