@@ -2,7 +2,6 @@
 
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm } from "react-hook-form";
-import * as v from "valibot";
 import { Button } from "@/shared/ui/button";
 import {
     Form,
@@ -16,37 +15,14 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Card } from "@/shared/ui/card";
 import ProjectProperty from "./ProjectProperty";
 import { timeAgo } from "@/shared/lib/dayjs";
-import { websocketManager } from "@/shared/api/ws-manager";
 import { boardQueries, BoardTypes } from "@/entities/board";
 import { queryClient } from "@/shared/api/query-client";
 import PrioritySelect from "./PrioritySelect";
 import AssigneeSelect from "./AssigneeSelect";
 import { cardService, CardTypes } from "@/entities/card";
-
-export const formSchema = v.object({
-    title: v.pipe(
-        v.string(),
-        v.minLength(2, "Title must be at least 2 characters.")
-    ),
-    description: v.string(),
-    priority: v.object({
-        id: v.string(),
-        projectId: v.union([v.string(), v.null_()]),
-        color: v.string(),
-        value: v.string(),
-        label: v.string(),
-    }),
-    assignee: v.array(
-        v.object({
-            id: v.string(),
-            name: v.string(),
-            email: v.string(),
-            image: v.optional(v.string()),
-        })
-    ),
-});
-
-export type TCardFormSchema = v.InferOutput<typeof formSchema>;
+import { useMemo } from "react";
+import { TEditCardFormSchema } from "../model/types";
+import { EditCardFormSchema } from "../model/contracts";
 
 interface EditCardFormProps {
     card: CardTypes.TCardSchema;
@@ -54,14 +30,18 @@ interface EditCardFormProps {
 }
 
 const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
-    const board = queryClient.getQueryData<BoardTypes.TBoardSchema>(
-        boardQueries.getIdKey(card.projectId)
+    const board = useMemo(
+        () =>
+            queryClient.getQueryData<BoardTypes.TBoardSchema>(
+                boardQueries.getIdKey(card.projectId)
+            ),
+        [card.projectId]
     );
 
     const column = board?.columns.find((c) => c.id === card.columnId);
 
-    const form = useForm<TCardFormSchema>({
-        resolver: valibotResolver(formSchema),
+    const form = useForm<TEditCardFormSchema>({
+        resolver: valibotResolver(EditCardFormSchema),
         defaultValues: {
             title: card.title,
             description: card.description,
@@ -70,7 +50,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
         },
     });
 
-    const onSubmit = (values: TCardFormSchema) => {
+    const onSubmit = (values: TEditCardFormSchema) => {
         const message = {
             id: card.id,
             title: values.title,
@@ -84,7 +64,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
         handleDialogClose();
     };
 
-    const currentValues = form.watch();
+    const { assignee, priority } = form.watch();
 
     return (
         <Form {...form}>
@@ -136,7 +116,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
                         <PrioritySelect
                             priorities={board!.priorities}
                             form={form}
-                            currentValues={currentValues}
+                            selectedPriority={priority}
                         />
                         <ProjectProperty
                             title="State"
@@ -145,7 +125,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
                         <AssigneeSelect
                             members={board!.members}
                             form={form}
-                            currentValues={currentValues}
+                            assignee={assignee}
                         />
                         <ProjectProperty
                             title="Updated"

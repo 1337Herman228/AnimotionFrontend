@@ -7,67 +7,66 @@ import {
 import { cn } from "@/shared/lib/cn";
 import { UseFormReturn } from "react-hook-form";
 import PriorityBadge from "@/shared/ui/priority-badge";
-import { TCardFormSchema } from "./EditCardForm";
 import ProjectProperty from "./ProjectProperty";
 import { CardTypes } from "@/entities/card";
+import { memo } from "react";
+import { TEditCardFormSchema } from "../model/types";
 
 interface PrioritySelectProps {
-    currentValues: TCardFormSchema;
-    form: UseFormReturn<TCardFormSchema>;
+    selectedPriority: CardTypes.TCardPrioritySchema;
+    form: UseFormReturn<TEditCardFormSchema>;
     priorities: CardTypes.TCardPrioritySchema[];
 }
 
-const PrioritySelect = ({
-    currentValues,
-    form,
-    priorities,
-}: PrioritySelectProps) => {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <div>
-                    <ProjectProperty
-                        title="Priority"
-                        propertyValue={[
-                            {
-                                value: currentValues.priority.label,
-                                icon: (
-                                    <PriorityBadge
-                                        color={currentValues.priority.color}
-                                        letter={currentValues.priority.value}
-                                    />
-                                ),
-                            },
-                        ]}
-                    />
-                </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-                className="min-w-[70vw] lg:min-w-[260px]"
-                align="start"
-            >
-                {priorities.map((priority) => (
-                    <DropdownMenuItem
-                        key={priority.value}
-                        onClick={() => {
-                            form.setValue("priority", priority);
-                        }}
-                        className={cn(
-                            currentValues.priority.id === priority.id &&
-                                "bg-accent text-accent-foreground",
-                            "flex gap-2 place-items-center font-medium cursor-pointer rounded-md hover:bg-accent-foreground/10 select-none"
-                        )}
-                    >
-                        <PriorityBadge
-                            color={priority.color}
-                            letter={priority.value}
+const PrioritySelect = memo(
+    ({ selectedPriority, form, priorities }: PrioritySelectProps) => {
+        return (
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <div>
+                        <ProjectProperty
+                            title="Priority"
+                            propertyValue={[
+                                {
+                                    value: selectedPriority.label,
+                                    icon: (
+                                        <PriorityBadge
+                                            color={selectedPriority.color}
+                                            letter={selectedPriority.value}
+                                        />
+                                    ),
+                                },
+                            ]}
                         />
-                        {priority.label}
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-};
+                    </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                    className="min-w-[70vw] lg:min-w-[260px]"
+                    align="start"
+                >
+                    {priorities.map((priority) => (
+                        <DropdownMenuItem
+                            key={priority.value}
+                            onClick={() => {
+                                form.setValue("priority", priority);
+                            }}
+                            className={cn(
+                                selectedPriority.id === priority.id &&
+                                    "bg-accent text-accent-foreground",
+                                "flex gap-2 place-items-center font-medium cursor-pointer rounded-md hover:bg-accent-foreground/10 select-none"
+                            )}
+                        >
+                            <PriorityBadge
+                                color={priority.color}
+                                letter={priority.value}
+                            />
+                            {priority.label}
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuContent>
+            </DropdownMenu>
+        );
+    }
+);
 
 export default PrioritySelect;
