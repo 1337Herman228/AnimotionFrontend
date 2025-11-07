@@ -12,6 +12,7 @@ import {
     MoveCardDtoSchema,
 } from "./contracts";
 import { api } from "@/shared/api/axiosInstance";
+import { useMutation } from "@tanstack/react-query";
 
 export const cardService: TCardService = {
     client: null,
