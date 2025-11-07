@@ -11,11 +11,11 @@ import {
     NavigationMenuList,
     NavigationMenuTrigger,
 } from "@/shared/ui/navigation-menu";
-import NavLink from "../NavLink";
 import { Button } from "@/shared/ui/button";
 import { signOut } from "next-auth/react";
+import { NavLink } from "./NavLink";
 
-export function NavigationMenuDemo() {
+export function Navbar() {
     return (
         <div className="w-full flex">
             <NavigationMenu

@@ -1,9 +1,9 @@
 import { Dialog, DialogContent, DialogTitle } from "@/shared/ui/dialog";
 import EditCardForm from "./EditCardForm";
-import { ICard } from "@/types";
+import { CardTypes } from "@/entities/card";
 
 interface EditCardDialogProps {
-    card: ICard;
+    card: CardTypes.TCardSchema;
     open?: boolean;
     onOpenChange: (open: boolean) => void;
 }

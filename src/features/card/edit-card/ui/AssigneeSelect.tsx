@@ -6,15 +6,15 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { cn } from "@/shared/lib/cn";
 import { UseFormReturn } from "react-hook-form";
-import { IMember } from "@/types";
 import UserAvatar from "@/shared/ui/user-avatar";
 import { TCardFormSchema } from "./EditCardForm";
 import ProjectProperty from "./ProjectProperty";
+import { CardTypes } from "@/entities/card";
 
 interface AssigneeSelectProps {
     currentValues: TCardFormSchema;
     form: UseFormReturn<TCardFormSchema>;
-    members: IMember[];
+    members: CardTypes.TCardMembersSchema;
 }
 
 const AssigneeSelect = ({
@@ -28,7 +28,7 @@ const AssigneeSelect = ({
         return !!assignee.find((member) => member.id === id);
     };
 
-    const toggleMember = (member: IMember) => {
+    const toggleMember = (member: CardTypes.TCardMemberSchema) => {
         if (assignee.find((m) => m.id === member.id)) {
             return form.setValue(
                 "assignee",

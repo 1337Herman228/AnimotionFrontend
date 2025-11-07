@@ -14,6 +14,7 @@ export const CardMemberSchema = v.object({
     email: v.string(),
     image: v.optional(v.string()),
 });
+export const CardMemberSchemaArray = v.array(CardMemberSchema);
 
 export const CardSchema = v.object({
     id: v.string(),
@@ -22,8 +23,6 @@ export const CardSchema = v.object({
     columnId: v.string(),
     projectId: v.string(),
     appointedMembers: v.array(CardMemberSchema),
-    // createdAt: v.date(),
-    // updatedAt: v.date(),
     createdAt: v.string(),
     updatedAt: v.string(),
     priority: CardPrioritySchema,

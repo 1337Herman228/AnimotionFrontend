@@ -10,17 +10,17 @@ export const columnService: TColumnService = {
 
     // addColumn(data: TAddCardDtoSchema) {
     //     const addCardMessage = parse(AddCardDtoSchema, data);
-    //     publish(this.client, cardApiEndpoints.addCard(), addCardMessage);
+    //     api.post(this.client, cardApiEndpoints.addCard(), addCardMessage);
     // },
 
     // deleteColumn(data: TDeleteCardDtoSchema) {
     //     const deleteCardMessage = parse(DeleteCardDtoSchema, data);
-    //     publish(this.client, cardApiEndpoints.deleteCard(), deleteCardMessage);
+    //     api.delete(this.client, cardApiEndpoints.deleteCard(), deleteCardMessage);
     // },
 
     // editColumn(data: TEditCardDtoSchema) {
     //     const editCardMessage = parse(EditCardDtoSchema, data);
-    //     publish(this.client, cardApiEndpoints.editCard(), editCardMessage);
+    //     api.pu(this.client, cardApiEndpoints.editCard(), editCardMessage);
     // },
 
     async moveColumn(data: TMoveColumnDtoSchema) {

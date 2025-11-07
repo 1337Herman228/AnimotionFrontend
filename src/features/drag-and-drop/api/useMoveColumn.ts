@@ -1,13 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { IBoard, IMoveColumnMessage } from "@/types";
-import { columnService } from "@/entities/column";
-import { boardQueries } from "@/entities/board";
+import { ColumnApiTypes, columnService, ColumnTypes } from "@/entities/column";
+import { boardQueries, BoardTypes } from "@/entities/board";
 
 export const useMoveColumn = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: IMoveColumnMessage) =>
+        mutationFn: (data: ColumnApiTypes.TMoveColumnDtoSchema) =>
             columnService.moveColumn(data),
         onMutate: async (movedColumnData) => {
             const queryKey = boardQueries.getIdKey(movedColumnData.projectId);
@@ -15,18 +14,21 @@ export const useMoveColumn = () => {
             await queryClient.cancelQueries({ queryKey });
 
             const previousBoardState =
-                queryClient.getQueryData<IBoard>(queryKey);
+                queryClient.getQueryData<BoardTypes.TBoardSchema>(queryKey);
 
-            queryClient.setQueryData<IBoard>(queryKey, (oldData) => {
-                if (!oldData) return undefined;
+            queryClient.setQueryData<BoardTypes.TBoardSchema>(
+                queryKey,
+                (oldData) => {
+                    if (!oldData) return undefined;
 
-                const updatedData = {
-                    ...oldData,
-                    columnOrder: movedColumnData.columnOrder,
-                };
+                    const updatedData = {
+                        ...oldData,
+                        columnOrder: movedColumnData.columnOrder,
+                    };
 
-                return updatedData;
-            });
+                    return updatedData;
+                }
+            );
 
             return { previousBoardState, projectId: movedColumnData.projectId };
         },

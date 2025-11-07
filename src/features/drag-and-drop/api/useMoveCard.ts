@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { IBoard } from "@/types";
 import { cardQueries, cardService, TMoveCardDtoSchema } from "@/entities/card";
+import { BoardTypes } from "@/entities/board";
 
 export const useMoveCardMutation = () => {
     const queryClient = useQueryClient();
@@ -13,18 +13,21 @@ export const useMoveCardMutation = () => {
             await queryClient.cancelQueries({ queryKey });
 
             const previousBoardState =
-                queryClient.getQueryData<IBoard>(queryKey);
+                queryClient.getQueryData<BoardTypes.TBoardSchema>(queryKey);
 
-            queryClient.setQueryData<IBoard>(queryKey, (oldData) => {
-                if (!oldData) return undefined;
+            queryClient.setQueryData<BoardTypes.TBoardSchema>(
+                queryKey,
+                (oldData) => {
+                    if (!oldData) return undefined;
 
-                const updatedData = {
-                    ...oldData,
-                    columns: movedCardData.updatedColumns,
-                };
+                    const updatedData = {
+                        ...oldData,
+                        columns: movedCardData.updatedColumns,
+                    };
 
-                return updatedData;
-            });
+                    return updatedData;
+                }
+            );
 
             return { previousBoardState, boardId: movedCardData.boardId };
         },

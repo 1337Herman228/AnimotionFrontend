@@ -6,15 +6,15 @@ import {
 } from "@/shared/ui/dropdown-menu";
 import { cn } from "@/shared/lib/cn";
 import { UseFormReturn } from "react-hook-form";
-import { ITaskPriority } from "@/types";
 import PriorityBadge from "@/shared/ui/priority-badge";
 import { TCardFormSchema } from "./EditCardForm";
 import ProjectProperty from "./ProjectProperty";
+import { CardTypes } from "@/entities/card";
 
 interface PrioritySelectProps {
     currentValues: TCardFormSchema;
     form: UseFormReturn<TCardFormSchema>;
-    priorities: ITaskPriority[];
+    priorities: CardTypes.TCardPrioritySchema[];
 }
 
 const PrioritySelect = ({

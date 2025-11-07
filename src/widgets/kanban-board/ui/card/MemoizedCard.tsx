@@ -1,7 +1,6 @@
-import { ICard } from "@/types";
 import { GripVertical } from "lucide-react";
 import { cn } from "@/shared/lib/cn";
-import { Card } from "@/entities/card";
+import { Card, CardTypes } from "@/entities/card";
 import { CardTitle } from "@/shared/ui/card";
 import { memo, useState } from "react";
 import { useDndSortable } from "@/shared/lib/useDndSortable";
@@ -9,7 +8,7 @@ import { DeleteCardMenuItem } from "@/features/card/delete-card";
 import { EditCardDialog, EditCardMenuItem } from "@/features/card/edit-card";
 
 interface TaskCardProps {
-    card: ICard;
+    card: CardTypes.TCardSchema;
     isOverlay?: boolean;
 }
 

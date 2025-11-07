@@ -1,10 +1,10 @@
-import { BoardSummaryCard, boardTypes } from "@/entities/board";
+import { BoardSummaryCard, BoardTypes } from "@/entities/board";
 import { SettingsMenu } from "@/features/board";
 import { Separator } from "@/shared/ui/separator";
 import { memo } from "react";
 
 export const MemoizedBoardSummaryCard = memo(
-    ({ board }: { board: boardTypes.TBoardSummarySchema }) => {
+    ({ board }: { board: BoardTypes.TBoardSummarySchema }) => {
         return (
             <BoardSummaryCard
                 key={board.id}

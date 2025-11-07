@@ -12,17 +12,16 @@ import {
     FormMessage,
 } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
-import { ICard } from "@/types";
 import { Textarea } from "@/shared/ui/textarea";
 import { Card } from "@/shared/ui/card";
 import ProjectProperty from "./ProjectProperty";
 import { timeAgo } from "@/shared/lib/dayjs";
 import { websocketManager } from "@/shared/api/ws-manager";
-import { boardQueries, boardTypes } from "@/entities/board";
+import { boardQueries, BoardTypes } from "@/entities/board";
 import { queryClient } from "@/shared/api/query-client";
 import PrioritySelect from "./PrioritySelect";
 import AssigneeSelect from "./AssigneeSelect";
-import { cardService } from "@/entities/card";
+import { cardService, CardTypes } from "@/entities/card";
 
 export const formSchema = v.object({
     title: v.pipe(
@@ -50,14 +49,16 @@ export const formSchema = v.object({
 export type TCardFormSchema = v.InferOutput<typeof formSchema>;
 
 interface EditCardFormProps {
-    card: ICard;
+    card: CardTypes.TCardSchema;
     handleDialogClose: () => void;
 }
 
 const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
-    const board = queryClient.getQueryData<boardTypes.TBoardSchema>(
+    const board = queryClient.getQueryData<BoardTypes.TBoardSchema>(
         boardQueries.getIdKey(card.projectId)
     );
+
+    const column = board?.columns.find((c) => c.id === card.columnId);
 
     const form = useForm<TCardFormSchema>({
         resolver: valibotResolver(formSchema),
@@ -130,9 +131,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
                     <Card className="shadow-none bg-muted/30 dark:border-muted dark:bg-muted/50 rounded-md py-2 gap-0 sticky top-0">
                         <ProjectProperty
                             title="Project"
-                            propertyValue={[
-                                { value: "project mock name" as string }, // TODO
-                            ]}
+                            propertyValue={[{ value: board?.name as string }]}
                         />
                         <PrioritySelect
                             priorities={board!.priorities}
@@ -141,9 +140,7 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
                         />
                         <ProjectProperty
                             title="State"
-                            propertyValue={[
-                                { value: "Mock Column title" as string }, //Todo
-                            ]}
+                            propertyValue={[{ value: column?.title as string }]}
                         />
                         <AssigneeSelect
                             members={board!.members}

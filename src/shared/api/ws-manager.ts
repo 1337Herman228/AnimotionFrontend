@@ -1,7 +1,6 @@
 import { Client, IMessage } from "@stomp/stompjs";
-import { IBoard, ICardMessage } from "@/types";
 import { queryClient } from "./query-client";
-import { boardQueries } from "@/entities/board";
+import { boardQueries, BoardTypes } from "@/entities/board";
 
 class WebSocketManager {
     private client: Client | null = null;
@@ -26,8 +25,10 @@ class WebSocketManager {
                 `${this.GENERAL_TOPIC_PREFIX}${projectId}`,
                 (message: IMessage) => {
                     try {
-                        const parsedData: IBoard = JSON.parse(message.body);
-                        queryClient.setQueryData<IBoard>(
+                        const parsedData: BoardTypes.TBoardSchema = JSON.parse(
+                            message.body
+                        );
+                        queryClient.setQueryData<BoardTypes.TBoardSchema>(
                             boardQueries.getIdKey(projectId),
                             () => parsedData
                         );
@@ -62,19 +63,6 @@ class WebSocketManager {
                 }),
             });
         });
-    }
-
-    public editCard(message: ICardMessage) {
-        if (this.client && this.client.active) {
-            this.client.publish({
-                destination: "/app/board/edit-card",
-                body: JSON.stringify(message),
-            });
-        } else {
-            console.error(
-                "Cannot send message, WebSocket client is not connected."
-            );
-        }
     }
 
     public disconnect(): void {

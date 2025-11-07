@@ -1,4 +1,9 @@
-import { IBoardColumn } from "@/types";
+interface IBoardColumn {
+    cardOrder: string[];
+    cards: any;
+    id: string;
+    title: string;
+}
 
 export const findColumnByCardId = (
     cardId: string,

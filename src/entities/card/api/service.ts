@@ -11,7 +11,6 @@ import {
     EditCardDtoSchema,
     MoveCardDtoSchema,
 } from "./contracts";
-import publish from "@/shared/api/ws-publish";
 import { api } from "@/shared/api/axiosInstance";
 
 export const cardService: TCardService = {

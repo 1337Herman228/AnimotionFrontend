@@ -1,9 +1,9 @@
 import { memo } from "react";
-import { boardTypes } from "@/entities/board";
+import { BoardTypes } from "@/entities/board";
 import { MemoizedBoardSummaryCard } from "./MemoizedBoardSummaryCard";
 
 export const BoardSummaryList = memo(
-    ({ boards }: { boards: boardTypes.TBoardsSummarySchema }) => {
+    ({ boards }: { boards: BoardTypes.TBoardsSummarySchema }) => {
         return (
             <ul className="grid grid-cols-2 gap-4">
                 {boards.map((board) => (

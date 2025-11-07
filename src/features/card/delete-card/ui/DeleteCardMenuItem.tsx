@@ -1,10 +1,9 @@
-import { cardService } from "@/entities/card";
+import { cardService, CardTypes } from "@/entities/card";
 import { DropdownMenuItem } from "@/shared/ui/dropdown-menu";
-import { ICard } from "@/types";
 import { Delete } from "lucide-react";
 
 interface DeleteCardMenuItemProps {
-    card: ICard;
+    card: CardTypes.TCardSchema;
 }
 export const DeleteCardMenuItem = ({ card }: DeleteCardMenuItemProps) => {
     return (

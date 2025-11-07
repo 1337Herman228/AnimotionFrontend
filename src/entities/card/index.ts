@@ -1,6 +1,6 @@
-export type { TAddCardDtoSchema } from "./api/types";
+export * as CardApiTypes from "./api/types";
 export * as CardTypes from "./model/types";
-export * as CardDtoContracts from "./api/contracts";
+export * as CardApiContracts from "./api/contracts";
 export * as CardContracts from "./model/contracts";
 export type { TMoveCardDtoSchema } from "./api/types";
 export { cardService } from "./api/service";

@@ -1,39 +1,37 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { z } from "zod";
+import * as v from "valibot";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-const FormSchema = z.object({
-    email: z
-        .string()
-        .min(2, {
-            message: "Email must be at least 2 characters.",
-        })
-        .email("Invalid email"),
-    password: z.string().min(1, {
-        message: "Write your password",
-    }),
+const FormSchema = v.object({
+    email: v.pipe(
+        v.string(),
+        v.minLength(2, "Email must be at least 2 characters."),
+        v.email("Invalid email")
+    ),
+    password: v.pipe(v.string(), v.minLength(1, "Write your password")),
 });
+type TFormSchema = v.InferOutput<typeof FormSchema>;
 
 const useLoginForm = (): [
-    UseFormReturn<z.infer<typeof FormSchema>>,
-    (data: z.infer<typeof FormSchema>) => void
+    UseFormReturn<TFormSchema>,
+    (data: TFormSchema) => void
 ] => {
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<TFormSchema>({
+        resolver: valibotResolver(FormSchema),
         defaultValues: {
             email: "",
             password: "",
         },
     });
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    function onSubmit(data: TFormSchema) {
         signIn("credentials", {
             email: data.email,
             password: data.password,

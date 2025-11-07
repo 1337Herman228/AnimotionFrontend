@@ -1,30 +1,32 @@
-import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { valibotResolver } from "@hookform/resolvers/valibot";
 import { api } from "@/shared/api/axiosInstance";
+import * as v from "valibot";
 
-const FormSchema = z.object({
-    name: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    email: z
-        .string()
-        .min(2, {
-            message: "Email must be at least 2 characters.",
-        })
-        .email("Invalid email"),
-    password: z.string().min(6, {
-        message: "Password must be at least 6 characters.",
-    }),
+const FormSchema = v.object({
+    name: v.pipe(
+        v.string(),
+        v.minLength(2, "Username must be at least 2 characters.")
+    ),
+    email: v.pipe(
+        v.string(),
+        v.minLength(2, "Email must be at least 2 characters."),
+        v.email("Invalid email")
+    ),
+    password: v.pipe(
+        v.string(),
+        v.minLength(6, "Password must be at least 6 characters.")
+    ),
 });
+type TFormSchema = v.InferOutput<typeof FormSchema>;
 
 const useRegisterForm = () => {
     const router = useRouter();
 
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<TFormSchema>({
+        resolver: valibotResolver(FormSchema),
         defaultValues: {
             name: "",
             email: "",
@@ -32,7 +34,7 @@ const useRegisterForm = () => {
         },
     });
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    function onSubmit(data: TFormSchema) {
         api.post("/auth/register", data)
             .then(() => {
                 router.push("/");
