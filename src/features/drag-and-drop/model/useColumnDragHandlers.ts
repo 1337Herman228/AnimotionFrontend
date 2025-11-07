@@ -36,7 +36,7 @@ export const useColumnDragHandlers = ({
         setColumns(updatedColumns);
 
         moveColumn({
-            projectId: active.data.current.projectId,
+            projectId: active.data.current.column.projectId,
             columnOrder: updatedColumns.map((c) => c.id),
         });
     };

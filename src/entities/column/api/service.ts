@@ -1,13 +1,10 @@
-import { websocketManager } from "@/shared/api/ws-manager";
-import { TBoardSchema } from "@/entities/board/@x";
 import { TColumnService, TMoveColumnDtoSchema } from "./types";
 import { parse } from "valibot";
 import { MoveColumnDtoSchema } from "./contracts";
 import { columnApiEndpoints } from "./endpoints";
+import { api } from "@/shared/api/axiosInstance";
 
 export const columnService: TColumnService = {
-    client: null,
-
     // addColumn(data: TAddCardDtoSchema) {
     //     const addCardMessage = parse(AddCardDtoSchema, data);
     //     api.post(this.client, cardApiEndpoints.addCard(), addCardMessage);
@@ -25,9 +22,6 @@ export const columnService: TColumnService = {
 
     async moveColumn(data: TMoveColumnDtoSchema) {
         const moveColumnMessage = parse(MoveColumnDtoSchema, data);
-        return websocketManager.publishAndAwaitReply<TBoardSchema>(
-            columnApiEndpoints.moveColumn(),
-            moveColumnMessage
-        );
+        return api.put(columnApiEndpoints.moveColumn(), moveColumnMessage);
     },
 };
