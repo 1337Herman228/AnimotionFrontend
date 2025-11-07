@@ -1,19 +1,18 @@
-import { cardService, TAddCardDtoSchema } from "@/entities/card";
-import { TColumnSchema } from "@/entities/column";
-import { websocketManager } from "@/shared/api/ws-manager";
+import { CardApiTypes, cardService } from "@/entities/card";
+import { ColumnTypes } from "@/entities/column";
 import { Button } from "@/shared/ui/button";
 import { Plus } from "lucide-react";
 import { useParams } from "next/navigation";
 
 interface CreateCardBtnProps {
-    column: TColumnSchema;
+    column: ColumnTypes.TColumnSchema;
 }
 
 export const CreateCardButton = ({ column }: CreateCardBtnProps) => {
     const params = useParams();
     const boardId = params?.boardId as string;
 
-    const template: TAddCardDtoSchema = {
+    const template: CardApiTypes.TAddCardDtoSchema = {
         projectId: boardId || "",
         title: "Card" + Math.random().toString(36).substring(2),
         columnId: column.id,
