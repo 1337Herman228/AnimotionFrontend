@@ -1,6 +1,7 @@
 "use client";
 
-import { ReactNode } from "react";
+import { cn } from "@/shared/lib/cn";
+import { ComponentProps, ReactNode } from "react";
 
 interface ProjectPropertyProps {
     title: string;
@@ -10,9 +11,18 @@ interface ProjectPropertyProps {
     }[];
 }
 
-const ProjectProperty = ({ title, propertyValue }: ProjectPropertyProps) => {
+const ProjectProperty = ({
+    title,
+    propertyValue,
+    className,
+}: ProjectPropertyProps & ComponentProps<"div">) => {
     return (
-        <div className="grid grid-cols-[minmax(0,126px)_minmax(0,160px)] gap-1.5 text-sm px-4 py-2 cursor-pointer hover:bg-accent-foreground/5 ">
+        <div
+            className={cn(
+                "grid grid-cols-[minmax(0,126px)_minmax(0,160px)] gap-1.5 text-sm px-4 py-2 cursor-pointer hover:bg-accent-foreground/5",
+                className
+            )}
+        >
             <div className="text-accent-foreground/60">{title}</div>
             <div className="flex flex-col justify-between gap-2 place-items-start">
                 {propertyValue?.map(({ value, icon }, index) => (

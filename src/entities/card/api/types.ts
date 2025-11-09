@@ -12,7 +12,7 @@ export type TMoveCardDtoSchema = InferOutput<typeof MoveCardDtoSchema>;
 
 export type TCardService = {
     client: Client | null;
-    addCard: (arg: TAddCardDtoSchema) => void;
+    addCard: (arg: TAddCardDtoSchema) => Promise<unknown>;
     deleteCard: (id: string) => void;
     editCard: (arg: TEditCardDtoSchema) => Promise<unknown>;
     moveCard: (arg: TMoveCardDtoSchema) => Promise<unknown>;

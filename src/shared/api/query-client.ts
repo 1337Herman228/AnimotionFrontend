@@ -23,9 +23,9 @@ export const queryClient = new QueryClient({
 
             if (errorMessage) {
                 if (typeof errorMessage === "string") {
-                    toast.error(errorMessage);
+                    toast.error(errorMessage, { position: "top-right" });
                 } else if (typeof errorMessage === "function") {
-                    toast.error(errorMessage(error));
+                    toast.error(errorMessage(error), { position: "top-right" });
                 }
             }
         },

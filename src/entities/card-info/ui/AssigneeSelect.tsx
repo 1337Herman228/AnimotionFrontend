@@ -10,11 +10,11 @@ import UserAvatar from "@/shared/ui/user-avatar";
 import ProjectProperty from "./ProjectProperty";
 import { CardTypes } from "@/entities/card";
 import { memo } from "react";
-import { TEditCardFormSchema } from "../model/types";
+import { TCardInfoFormSchema } from "../model/types";
 
 interface AssigneeSelectProps {
     assignee: CardTypes.TCardMembersSchema;
-    form: UseFormReturn<TEditCardFormSchema>;
+    form: UseFormReturn<TCardInfoFormSchema>;
     members: CardTypes.TCardMembersSchema;
 }
 
