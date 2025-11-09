@@ -5,65 +5,63 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/shared/ui/button";
 import { boardQueries, BoardTypes } from "@/entities/board";
 import { queryClient } from "@/shared/api/query-client";
-import { CardApiTypes, CardTypes } from "@/entities/card";
+import { CardApiTypes } from "@/entities/card";
 import { useMemo } from "react";
-import { useEditCardMutation } from "../api/useEditCard";
 import {
     CardInfo,
     CardInfoContracts,
     CardInfoTypes,
 } from "@/entities/card-info";
-import { timeAgo } from "@/shared/lib/dayjs";
+import { useAddCardMutation } from "../api/useAddCard";
+import { ColumnTypes } from "@/entities/column";
 
-interface EditCardFormProps {
-    card: CardTypes.TCardSchema;
+interface AddCardFormProps {
+    column: ColumnTypes.TColumnSchema;
+    boardId: string;
     handleDialogClose: () => void;
 }
 
-const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
-    const { mutate: editCard } = useEditCardMutation();
+const AddCardForm = ({
+    column,
+    boardId,
+    handleDialogClose,
+}: AddCardFormProps) => {
+    const { mutate: addCard } = useAddCardMutation();
 
     const board = useMemo(
         () =>
             queryClient.getQueryData<BoardTypes.TBoardSchema>(
-                boardQueries.getIdKey(card.projectId)
+                boardQueries.getIdKey(boardId)
             ),
-        [card.projectId]
+        [boardId]
     );
-
-    const column = board?.columns.find((c) => c.id === card.columnId);
 
     const form = useForm<CardInfoTypes.TCardInfoFormSchema>({
         resolver: valibotResolver(CardInfoContracts.CardInfoFormSchema),
         defaultValues: {
-            ...card,
-            lastUpdated: timeAgo(card.updatedAt),
+            title: "",
+            description: "",
+            priority: null,
             state: column?.title,
+            assignee: [],
             projectName: board?.name,
-            assignee: card.appointedMembers,
         },
     });
 
     const onSubmit = (values: CardInfoTypes.TCardInfoFormSchema) => {
-        const message: CardApiTypes.TEditCardDtoSchema = {
+        const message: CardApiTypes.TAddCardDtoSchema = {
             ...values,
-            title: values?.title?.trim() ?? "",
-            columnId: column?.id,
-            projectId: board?.id,
-            id: card.id,
+            projectId: boardId,
+            priority: values.priority,
+            columnId: column.id,
             appointedMembers: values.assignee,
         };
-        editCard(message);
+        addCard(message);
         handleDialogClose();
     };
 
     return (
-        <CardInfo
-            form={form}
-            card={card}
-            board={board!}
-            onSubmit={onSubmit as any}
-        >
+        <CardInfo form={form} board={board!} onSubmit={onSubmit as any}>
             <CardInfo.StaticInfoContainer>
                 <CardInfo.Title />
                 <CardInfo.Description />
@@ -73,15 +71,14 @@ const EditCardForm = ({ card, handleDialogClose }: EditCardFormProps) => {
                 <CardInfo.PriorityField />
                 <CardInfo.StateField />
                 <CardInfo.MembersField />
-                <CardInfo.LastUpdatedField />
             </CardInfo.StickyInfoContainer>
             <CardInfo.FooterContainer>
                 <Button type="submit" className="cursor-pointer">
-                    Save changes
+                    Add card
                 </Button>
             </CardInfo.FooterContainer>
         </CardInfo>
     );
 };
 
-export default EditCardForm;
+export default AddCardForm;

@@ -8,7 +8,7 @@ import { useDndSortable } from "@/shared/lib/useDndSortable";
 import { SortableContext } from "@dnd-kit/sortable";
 import { Badge } from "@/shared/ui/badge";
 import { GripVertical } from "lucide-react";
-import { CreateCardButton } from "@/features/card/add-card";
+import { CreateCardDialogButton } from "@/features/card/add-card";
 import { Column as BoardColumn } from "@/entities/column";
 import { cn } from "@/shared/lib/cn";
 import { CardList } from "../card/CardList";
@@ -69,7 +69,7 @@ export const MemoizedColumn = memo(
                         <SortableContext items={column.cards.map((c) => c.id)}>
                             <CardList cards={column.cards} />
                         </SortableContext>
-                        <CreateCardButton column={column} />
+                        <CreateCardDialogButton column={column} />
                     </BoardColumn.Content>
                 </BoardColumn>
             </div>
